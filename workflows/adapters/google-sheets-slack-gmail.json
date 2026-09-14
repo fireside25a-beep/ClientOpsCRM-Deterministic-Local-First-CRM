@@ -1,0 +1,219 @@
+{
+  "id": "clr_saas_adapt01",
+  "name": "ClientOps Relay — Google Sheets + Slack + Gmail Adapter",
+  "active": false,
+  "nodes": [
+    {
+      "id": "adapter-trigger",
+      "name": "When Called by Core Workflow",
+      "type": "n8n-nodes-base.executeWorkflowTrigger",
+      "typeVersion": 1.2,
+      "position": [
+        0,
+        180
+      ],
+      "parameters": {
+        "inputSource": "jsonExample",
+        "jsonExample": "{\n  \"spreadsheetId\": \"real-spreadsheet-id-from-caller\",\n  \"sheetName\": \"Requests\",\n  \"slackChannelId\": \"real-channel-id-from-caller\",\n  \"customerEmail\": \"customer@business.test\",\n  \"ticketId\": \"00000000-0000-4000-8000-000000000000\",\n  \"name\": \"Customer name\",\n  \"email\": \"customer@business.test\",\n  \"phone\": \"\",\n  \"city\": \"\",\n  \"category\": \"support\",\n  \"score\": 90,\n  \"serviceable\": true,\n  \"urgency\": \"high\",\n  \"priority\": \"high\",\n  \"route\": \"ROUTE_URGENT\",\n  \"summary\": \"A customer reports a critical account issue that needs support today.\",\n  \"draftReply\": \"Thanks for reaching out. Our team will review your request promptly.\"\n}"
+      }
+    },
+    {
+      "id": "adapter-sheet-safe",
+      "name": "Prepare Safe Sheet Row",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        240,
+        180
+      ],
+      "parameters": {
+        "mode": "runOnceForAllItems",
+        "language": "javaScript",
+        "jsCode": "const safe = (value) => {\n  const text = String(value ?? '');\n  return /^[\\s]*[=+\\-@]/u.test(text) ? \"'\" + text : text;\n};\nreturn $input.all().map((item) => {\n  const data = item.json ?? {};\n  if (!/^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i.test(String(data.ticketId ?? ''))) {\n    throw new Error('Adapter contract requires a UUID ticketId');\n  }\n  if (typeof data.category !== 'string' || data.category.length < 1 || data.category.length > 64) {\n    throw new Error('Adapter contract requires a category up to 64 characters');\n  }\n  if (!Number.isInteger(data.score) || data.score < 0 || data.score > 100) {\n    throw new Error('Adapter contract requires an integer score from 0 to 100');\n  }\n  if (typeof data.serviceable !== 'boolean') {\n    throw new Error('Adapter contract requires a boolean serviceable value');\n  }\n  if (!['low', 'medium', 'high'].includes(data.urgency)) {\n    throw new Error('Adapter contract requires low, medium, or high urgency');\n  }\n  return { json: {\n    ticketId: String(data.ticketId),\n    name: safe(data.name),\n    email: safe(data.email),\n    phone: safe(data.phone),\n    city: safe(data.city),\n    category: safe(data.category),\n    score: data.score,\n    serviceable: data.serviceable,\n    urgency: safe(data.urgency),\n    priority: safe(data.priority),\n    route: safe(data.route),\n    summary: safe(data.summary),\n  } };\n});"
+      }
+    },
+    {
+      "id": "adapter-sheets",
+      "name": "Upsert Request in Google Sheets",
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.7,
+      "position": [
+        480,
+        180
+      ],
+      "parameters": {
+        "authentication": "oAuth2",
+        "resource": "sheet",
+        "operation": "appendOrUpdate",
+        "documentId": {
+          "__rl": true,
+          "mode": "id",
+          "value": "={{ $('When Called by Core Workflow').item.json.spreadsheetId }}"
+        },
+        "sheetName": {
+          "__rl": true,
+          "mode": "name",
+          "value": "={{ $('When Called by Core Workflow').item.json.sheetName }}"
+        },
+        "columns": {
+          "mappingMode": "autoMapInputData",
+          "value": {},
+          "matchingColumns": [
+            "ticketId"
+          ],
+          "schema": [],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {
+          "cellFormat": "RAW",
+          "handlingExtraData": "error"
+        }
+      },
+      "retryOnFail": true,
+      "maxTries": 3,
+      "waitBetweenTries": 1000,
+      "onError": "stopWorkflow"
+    },
+    {
+      "id": "adapter-slack-safe",
+      "name": "Build Safe Slack Message",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        720,
+        180
+      ],
+      "parameters": {
+        "mode": "runOnceForAllItems",
+        "language": "javaScript",
+        "jsCode": "const escapeSlack = (value) => String(value ?? '')\n  .replaceAll('&', '&amp;')\n  .replaceAll('<', '&lt;')\n  .replaceAll('>', '&gt;');\nconst data = $('When Called by Core Workflow').first().json ?? {};\nreturn [{ json: {\n  slackText: '*New ' + escapeSlack(data.urgency) + ' request* — ' + escapeSlack(data.name)\n    + '\\nCategory: ' + escapeSlack(data.category) + ' · Score: ' + escapeSlack(data.score)\n    + '\\n' + escapeSlack(data.summary)\n    + '\\nTicket: ' + escapeSlack(data.ticketId),\n} }];"
+      }
+    },
+    {
+      "id": "adapter-slack",
+      "name": "Notify Slack",
+      "type": "n8n-nodes-base.slack",
+      "typeVersion": 2.5,
+      "position": [
+        960,
+        180
+      ],
+      "parameters": {
+        "authentication": "oAuth2",
+        "resource": "message",
+        "operation": "post",
+        "select": "channel",
+        "channelId": {
+          "__rl": true,
+          "mode": "id",
+          "value": "={{ $('When Called by Core Workflow').item.json.slackChannelId }}"
+        },
+        "messageType": "text",
+        "text": "={{ $json.slackText }}",
+        "otherOptions": {}
+      },
+      "retryOnFail": true,
+      "maxTries": 3,
+      "waitBetweenTries": 1000,
+      "onError": "stopWorkflow"
+    },
+    {
+      "id": "adapter-gmail",
+      "name": "Send Gmail Acknowledgement",
+      "type": "n8n-nodes-base.gmail",
+      "typeVersion": 2.2,
+      "position": [
+        1200,
+        180
+      ],
+      "parameters": {
+        "authentication": "oAuth2",
+        "resource": "message",
+        "operation": "send",
+        "sendTo": "={{ $('When Called by Core Workflow').item.json.customerEmail }}",
+        "subject": "We received your request",
+        "emailType": "text",
+        "message": "={{ $('When Called by Core Workflow').item.json.draftReply }}",
+        "options": {
+          "appendAttribution": false
+        }
+      },
+      "retryOnFail": true,
+      "maxTries": 3,
+      "waitBetweenTries": 1000,
+      "onError": "stopWorkflow"
+    }
+  ],
+  "connections": {
+    "When Called by Core Workflow": {
+      "main": [
+        [
+          {
+            "node": "Prepare Safe Sheet Row",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Prepare Safe Sheet Row": {
+      "main": [
+        [
+          {
+            "node": "Upsert Request in Google Sheets",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Upsert Request in Google Sheets": {
+      "main": [
+        [
+          {
+            "node": "Build Safe Slack Message",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Build Safe Slack Message": {
+      "main": [
+        [
+          {
+            "node": "Notify Slack",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Notify Slack": {
+      "main": [
+        [
+          {
+            "node": "Send Gmail Acknowledgement",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "settings": {
+    "executionOrder": "v1",
+    "errorWorkflow": "clr_errors_00001",
+    "saveDataErrorExecution": "none",
+    "saveDataSuccessExecution": "none",
+    "saveManualExecutions": false,
+    "saveExecutionProgress": false,
+    "executionTimeout": 60
+  },
+  "pinData": {},
+  "meta": {
+    "templateCredsSetupCompleted": true
+  },
+  "tags": []
+}

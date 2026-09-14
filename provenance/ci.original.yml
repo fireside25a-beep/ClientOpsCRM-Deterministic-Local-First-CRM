@@ -1,0 +1,108 @@
+name: ClientOps Relay CI
+
+on:
+  push:
+  pull_request:
+
+permissions:
+  contents: read
+
+jobs:
+  deterministic-contracts:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 24.14.0
+          cache: npm
+      - name: Install exact test dependencies
+        run: npm ci
+      - name: Validate shell and generated files
+        run: |
+          sh -n clientops scripts/bootstrap-n8n.sh database/001-bootstrap.sh database/migrate.sh tests/e2e.sh
+          node scripts/build-workflows.mjs
+          node scripts/render-deployments.mjs
+      - name: Run deterministic, database, and workflow contracts
+        run: npm test
+      - name: Reproduce generated release evidence
+        run: |
+          node scripts/render-portfolio.mjs
+          node scripts/render-deployments.mjs
+          node scripts/build-release-manifest.mjs
+          git diff --exit-code -- workflows deploy artifacts/portfolio/*.svg artifacts/portfolio/demo-frames/*.svg RELEASE_MANIFEST.json
+      - name: Run address and undefined-behavior sanitizers
+        run: make -C policy-engine sanitize
+
+  exact-n8n:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 24.14.0
+      - name: Install exact n8n CLI
+        run: npm install --prefix "$RUNNER_TEMP/n8n-2.37.10" --no-audit --no-fund n8n@2.37.10
+      - name: Prove fresh, frozen stock-v1 upgrade, and customization refusal paths
+        run: N8N_BIN="$RUNNER_TEMP/n8n-2.37.10/node_modules/.bin/n8n" npm run test:exact-n8n
+
+  docker-acceptance:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 25
+    steps:
+      - uses: actions/checkout@v4
+      - name: Generate isolated test configuration
+        run: ./clientops setup ci-owner@clientops.local
+      - name: Validate Compose model
+        run: docker compose --env-file .env config --quiet
+      - name: Build and probe the real deployment companion
+        run: |
+          set -eu
+          companion_key=$(openssl rand -hex 32)
+          companion_name=clientops-relay-companion-ci
+          trap 'docker rm --force "$companion_name" >/dev/null 2>&1 || true' EXIT
+          docker build --file companion/Dockerfile --tag clientops-relay-companion:ci .
+          docker run --detach --name "$companion_name" \
+            --publish 127.0.0.1:18080:8080 \
+            --env "CLIENTOPS_COMPANION_API_KEY=$companion_key" \
+            clientops-relay-companion:ci
+          attempt=0
+          until curl --fail --silent http://127.0.0.1:18080/readyz >/dev/null; do
+            attempt=$((attempt + 1))
+            test "$attempt" -lt 60
+            sleep 1
+          done
+          test "$(curl --silent --output /dev/null --write-out '%{http_code}' http://127.0.0.1:18080/healthz)" = 200
+          test "$(curl --silent --output /dev/null --write-out '%{http_code}' \
+            --header 'Content-Type: application/json' \
+            --data-binary @examples/policy-request.json \
+            http://127.0.0.1:18080/v2/qualify)" = 401
+          test "$(curl --silent --output /dev/null --write-out '%{http_code}' \
+            --header 'Content-Type: application/json' \
+            --header "X-ClientOps-Companion-Key: $companion_key" \
+            --data-binary @examples/policy-request.json \
+            http://127.0.0.1:18080/v2/qualify)" = 200
+      - name: Run complete black-box acceptance suite
+        run: ./clientops verify
+      - name: Import optional workflows into exact n8n inactive
+        run: |
+          docker compose --env-file .env run --rm --no-deps --entrypoint n8n n8n-init \
+            import:workflow --input=/opt/clientops/workflows/adapters/google-sheets-slack-gmail.json
+          docker compose --env-file .env run --rm --no-deps --entrypoint n8n n8n-init \
+            import:workflow --input=/opt/clientops/workflows/cloud/01-api-lead-intake.json
+      - name: Capture service logs on failure
+        if: failure()
+        run: |
+          mkdir -p artifacts/runtime
+          docker compose --env-file .env logs --no-color > artifacts/runtime/compose.log
+      - uses: actions/upload-artifact@v4
+        if: failure()
+        with:
+          name: clientops-relay-failure-logs
+          path: artifacts/runtime/compose.log
+          if-no-files-found: ignore
+      - name: Stop services
+        if: always()
+        run: docker compose --env-file .env down

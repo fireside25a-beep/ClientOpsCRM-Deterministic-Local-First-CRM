@@ -1,0 +1,215 @@
+% Options for packages loaded elsewhere
+\PassOptionsToPackage{unicode}{hyperref}
+\PassOptionsToPackage{hyphens}{url}
+%
+\documentclass[
+]{article}
+\usepackage{amsmath,amssymb}
+\usepackage{iftex}
+\ifPDFTeX
+  \usepackage[T1]{fontenc}
+  \usepackage[utf8]{inputenc}
+  \usepackage{textcomp} % provide euro and other symbols
+\else % if luatex or xetex
+  \usepackage{unicode-math} % this also loads fontspec
+  \defaultfontfeatures{Scale=MatchLowercase}
+  \defaultfontfeatures[\rmfamily]{Ligatures=TeX,Scale=1}
+\fi
+\usepackage{lmodern}
+\ifPDFTeX\else
+  % xetex/luatex font selection
+  \setmainfont[]{DejaVu Sans}
+  \setmonofont[]{DejaVu Sans Mono}
+\fi
+% Use upquote if available, for straight quotes in verbatim environments
+\IfFileExists{upquote.sty}{\usepackage{upquote}}{}
+\IfFileExists{microtype.sty}{% use microtype if available
+  \usepackage[]{microtype}
+  \UseMicrotypeSet[protrusion]{basicmath} % disable protrusion for tt fonts
+}{}
+\makeatletter
+\@ifundefined{KOMAClassName}{% if non-KOMA class
+  \IfFileExists{parskip.sty}{%
+    \usepackage{parskip}
+  }{% else
+    \setlength{\parindent}{0pt}
+    \setlength{\parskip}{6pt plus 2pt minus 1pt}}
+}{% if KOMA class
+  \KOMAoptions{parskip=half}}
+\makeatother
+\usepackage{xcolor}
+\usepackage[margin=24mm]{geometry}
+\setlength{\emergencystretch}{3em} % prevent overfull lines
+\providecommand{\tightlist}{%
+  \setlength{\itemsep}{0pt}\setlength{\parskip}{0pt}}
+\setcounter{secnumdepth}{-\maxdimen} % remove section numbering
+\ifLuaTeX
+  \usepackage{selnolig}  % disable illegal ligatures
+\fi
+\usepackage{bookmark}
+\IfFileExists{xurl.sty}{\usepackage{xurl}}{} % add URL line breaks if available
+\urlstyle{same}
+\hypersetup{
+  hidelinks,
+  pdfcreator={LaTeX via pandoc}}
+
+\author{}
+\date{}
+
+\begin{document}
+
+\section{ClientOpsCRM 2.0.0 Verification
+Report}\label{clientopscrm-200-verification-report}
+
+\subsection{Verification philosophy}\label{verification-philosophy}
+
+A feature is considered implemented only when the shipped compiled path
+performs it against real persistence. The principal CRM test creates a
+new SQLite database and invokes the compiled executable as a subprocess
+for each operation. It then opens the same database directly for
+adversarial invariant tests. There is no mocked repository, fake CRM
+service, fake database or expected-output-only test.
+
+\subsection{Build gates}\label{build-gates}
+
+Three binaries are compiled from \texttt{crm/src/clientops\_crm.cpp}:
+
+\begin{itemize}
+\tightlist
+\item
+  release: C++17, optimization,
+  \texttt{-Wall\ -Wextra\ -Wpedantic\ -Werror}, stack protector,
+  fortified libc use where supported;
+\item
+  debug: C++17, debug symbols, same warning-as-error policy;
+\item
+  sanitizer: C++17 with AddressSanitizer + UndefinedBehaviorSanitizer,
+  frame pointers and warnings as errors.
+\end{itemize}
+
+The final verification evidence records SHA-256 hashes of compiled
+release artifacts and the toolchain versions used.
+
+\subsection{Behavioral and adversarial
+suite}\label{behavioral-and-adversarial-suite}
+
+The finalized suite contains 27 named checks. It is run independently
+against GCC release, GCC debug, GCC ASan/UBSan, and a separately
+compiled Clang 17 release binary:
+
+\begin{enumerate}
+\def\labelenumi{\arabic{enumi}.}
+\tightlist
+\item
+  version command after global options, without opening/creating the
+  database
+\item
+  init and schema doctor
+\item
+  account normalization/uniqueness
+\item
+  contact email normalization/uniqueness
+\item
+  lead qualification
+\item
+  transactional lead conversion
+\item
+  failed conversion leaves no side effects
+\item
+  deal stage transition
+\item
+  deal win
+\item
+  closed deal cannot move
+\item
+  lost reason required
+\item
+  deal lost
+\item
+  task completion
+\item
+  double-close task rejected
+\item
+  note and custom field
+\item
+  invalid custom field key
+\item
+  FTS search
+\item
+  duplicate signal
+\item
+  dashboard/forecast JSON contracts
+\item
+  timeline/audit provenance
+\item
+  CSV content plus Relay JSON metadata round trip
+\item
+  Relay import idempotency
+\item
+  exports parseable
+\item
+  database adversarial guards
+\item
+  schema downgrade refused
+\item
+  deterministic repeated reads
+\item
+  final doctor
+\end{enumerate}
+
+All four executable variants must report \texttt{status:\ PASS} and
+\texttt{checks\_passed:\ 27}. Clang static analysis is also run
+independently and must emit no diagnostics.
+
+\subsection{Direct database adversary}\label{direct-database-adversary}
+
+The suite deliberately bypasses the application command layer. It
+attempts to insert a deal whose stage/status disagree and expects SQLite
+to reject it. It then attempts UPDATE and DELETE against an existing
+audit row and expects both to fail. This proves the relevant rules are
+not merely CLI conventions.
+
+\subsection{Import/export verification}\label{importexport-verification}
+
+CSV input includes a comma in a name, comma in company name, an embedded
+newline, escaped double quote, and JSON metadata. The imported record is
+read back and its JSON parsed for exact equality. The same CSV is
+replayed with \texttt{-\/-skip-existing}; expected result is
+imported=0/skipped=1 and exactly one row for that Relay ticket.
+
+JSON export is parsed and checked for the
+\texttt{clientops-crm-export-v1} format marker. Contact CSV export is
+parsed with Python\textquotesingle s CSV implementation and checked for
+records.
+
+\subsection{Determinism}\label{determinism}
+
+After state stabilizes, the test issues the same \texttt{deal\ list}
+command twice and requires exact parsed JSON equality. The forecast uses
+stored integer values and probabilities; no clock/rand/remote model
+participates in the arithmetic.
+
+\subsection{Combined-system
+verification}\label{combined-system-verification}
+
+The original Relay 1.2.1 C policy engine can be compiled/tested
+independently of the CRM. The combined launcher is shell-syntax checked;
+\texttt{crm\ version}, auto-initialization, \texttt{crm\ doctor}, JSON
+dashboard, and \texttt{crm-build} are exercised; and the Relay import
+bridge is shell-syntax and relational-contract checked against the
+shipped Relay schema.
+
+The live Docker/PostgreSQL bridge requires a Docker host with the Relay
+stack running. Packaging evidence distinguishes executable CRM gates
+from any environment-dependent live-stack gate instead of converting an
+unavailable external runtime into a false PASS.
+
+\subsection{Release package audit}\label{release-package-audit}
+
+The packager excludes build scratch, runtime databases, caches, local
+secrets/environment files and dependency directories. Every delivered
+regular file must be non-empty. Inner ZIPs and the master ZIP are tested
+with the ZIP integrity checker. A SHA-256 manifest and file inventory
+are generated from the actual delivered bytes.
+
+\end{document}

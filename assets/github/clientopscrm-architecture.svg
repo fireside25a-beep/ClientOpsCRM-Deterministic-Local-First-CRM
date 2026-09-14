@@ -1,0 +1,15 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="300" viewBox="0 0 1200 300" role="img" aria-labelledby="title desc">
+<title id="title">ClientOpsCRM architecture</title><desc id="desc">Operator CRM and Relay subsystem are independently runnable and connected by an idempotent import bridge.</desc>
+<defs><marker id="arrow" markerWidth="10" markerHeight="10" refX="8" refY="3" orient="auto"><path d="M0,0 L0,6 L9,3 z" fill="#64748b"/></marker></defs>
+<rect width="1200" height="300" rx="24" fill="#0b1220"/>
+<g font-family="Inter,Segoe UI,Arial,sans-serif">
+<rect x="55" y="70" width="285" height="160" rx="20" fill="#111827" stroke="#22d3ee" stroke-width="2"/>
+<text x="85" y="112" fill="#67e8f9" font-size="24" font-weight="800">Operator CRM</text>
+<text x="85" y="150" fill="#e2e8f0" font-size="19">C++17 executable</text><text x="85" y="180" fill="#e2e8f0" font-size="19">SQLite + FTS5</text><text x="85" y="210" fill="#94a3b8" font-size="16">accounts • contacts • leads • deals</text>
+<rect x="455" y="95" width="290" height="110" rx="20" fill="#111827" stroke="#8b5cf6" stroke-width="2"/>
+<text x="490" y="137" fill="#c4b5fd" font-size="23" font-weight="800">Idempotent bridge</text><text x="490" y="174" fill="#cbd5e1" font-size="18">Relay UUID → CRM import identity</text>
+<rect x="860" y="70" width="285" height="160" rx="20" fill="#111827" stroke="#34d399" stroke-width="2"/>
+<text x="895" y="112" fill="#6ee7b7" font-size="24" font-weight="800">ClientOps Relay</text><text x="895" y="150" fill="#e2e8f0" font-size="19">C11 policy engine</text><text x="895" y="180" fill="#e2e8f0" font-size="19">PostgreSQL + n8n</text><text x="895" y="210" fill="#94a3b8" font-size="16">intake • policy • outbox • automation</text>
+<line x1="340" y1="150" x2="448" y2="150" stroke="#64748b" stroke-width="3" marker-end="url(#arrow)"/><line x1="745" y1="150" x2="853" y2="150" stroke="#64748b" stroke-width="3" marker-end="url(#arrow)"/>
+<text x="478" y="255" fill="#94a3b8" font-size="15">Independent operation is supported; the bridge is optional.</text>
+</g></svg>

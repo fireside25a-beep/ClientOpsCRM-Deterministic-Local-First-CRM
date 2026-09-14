@@ -1,0 +1,144 @@
+id,category,title,url,retrieved
+1,n8n,n8n Documentation,https://docs.n8n.io/,2026-09-06
+2,n8n,Configure webhook URLs with reverse proxy,https://docs.n8n.io/hosting/configuration/configuration-examples/webhook-url/,2026-09-06
+3,n8n,Environment variables - endpoints,https://docs.n8n.io/hosting/configuration/environment-variables/endpoints/,2026-09-06
+4,n8n,Security audit,https://docs.n8n.io/hosting/securing/security-audit/,2026-09-06
+5,n8n,n8n integrations,https://n8n.io/integrations/n8n/,2026-09-06
+6,n8n,Start nodes integration directory,https://n8n.io/integrations/start/,2026-09-06
+7,n8n,Embed/OEM,https://n8n.io/oem/,2026-09-06
+8,n8n,Integration platform overview,https://n8n.io/limitless-integrations/,2026-09-06
+9,Traefik,Traefik Docker setup,https://doc.traefik.io/traefik/setup/docker/,2026-09-06
+10,Traefik,Expose Docker services with HTTPS,https://doc.traefik.io/traefik/expose/docker/,2026-09-06
+11,Traefik,ACME certificate resolver,https://doc.traefik.io/traefik/https/acme/,2026-09-06
+12,Traefik,BasicAuth middleware,https://doc.traefik.io/traefik/middlewares/http/basicauth/,2026-09-06
+13,Traefik,RateLimit middleware,https://doc.traefik.io/traefik/middlewares/http/ratelimit/,2026-09-06
+14,Traefik,Headers middleware,https://doc.traefik.io/traefik/middlewares/http/headers/,2026-09-06
+15,Traefik,EntryPoints and forwarded headers,https://doc.traefik.io/traefik/reference/install-configuration/entrypoints/,2026-09-06
+16,Docker,Compose services reference,https://docs.docker.com/reference/compose-file/services/,2026-09-06
+17,Docker,Compose networking,https://docs.docker.com/compose/how-tos/networking/,2026-09-06
+18,Docker,Bridge network driver,https://docs.docker.com/engine/network/drivers/bridge/,2026-09-06
+19,Docker,Docker Compose production guidance,https://docs.docker.com/compose/how-tos/production/,2026-09-06
+20,PostgreSQL,PostgreSQL 18 documentation,https://www.postgresql.org/docs/18/,2026-09-06
+21,PostgreSQL,Transaction isolation,https://www.postgresql.org/docs/18/transaction-iso.html,2026-09-06
+22,PostgreSQL,Explicit locking,https://www.postgresql.org/docs/18/explicit-locking.html,2026-09-06
+23,PostgreSQL,Constraints,https://www.postgresql.org/docs/18/ddl-constraints.html,2026-09-06
+24,PostgreSQL,Indexes,https://www.postgresql.org/docs/18/indexes.html,2026-09-06
+25,PostgreSQL,Roles and privileges,https://www.postgresql.org/docs/18/user-manag.html,2026-09-06
+26,PostgreSQL,Backup and restore,https://www.postgresql.org/docs/18/backup.html,2026-09-06
+27,NIST,SP 800-207 Zero Trust Architecture,https://csrc.nist.gov/pubs/sp/800/207/final,2026-09-06
+28,NIST,SP 800-207A Cloud-native zero trust,https://csrc.nist.gov/pubs/sp/800/207/a/final,2026-09-06
+29,NIST,SP 1800-35 Implementing Zero Trust Architecture,https://csrc.nist.gov/pubs/sp/1800/35/final,2026-09-06
+30,NIST,SP 800-218 Secure Software Development Framework,https://csrc.nist.gov/pubs/sp/800/218/final,2026-09-06
+31,OWASP,OWASP API Security Top 10,https://owasp.org/API-Security/,2026-09-06
+32,OWASP,OWASP ASVS,https://owasp.org/www-project-application-security-verification-standard/,2026-09-06
+33,RFC,RFC 9110 HTTP Semantics,https://www.rfc-editor.org/rfc/rfc9110.html,2026-09-06
+34,RFC,RFC 9112 HTTP/1.1,https://www.rfc-editor.org/rfc/rfc9112.html,2026-09-06
+35,RFC,RFC 7239 Forwarded HTTP Extension,https://www.rfc-editor.org/rfc/rfc7239.html,2026-09-06
+36,Freshworks,Freshsales CRM features,https://www.freshworks.com/crm/features/,2026-09-06
+37,Freshworks,How to configure a workflow,https://crmsupport.freshworks.com/support/solutions/articles/50000002143-how-to-configure-a-workflow-,2026-09-06
+38,Freshworks,Workflow library overview,https://crmsupport.freshworks.com/support/solutions/articles/50000011725-workflow-library-overview,2026-09-06
+39,Freshworks,Common use cases for workflows,https://crmsupport.freshworks.com/support/solutions/articles/50000002142-common-use-cases-for-workflows,2026-09-06
+40,Freshworks,Workflow Builder in Freshdesk,https://crmsupport.freshworks.com/support/solutions/articles/50000011782-workflow-builder-in-freshdesk-create-powerful-agentic-workflows-without-code,2026-09-06
+41,Freshworks,Workflow templates,https://crmsupport.freshworks.com/support/solutions/articles/50000004248-what-are-workflow-templates-how-to-use-them-,2026-09-06
+42,Freshworks,Automation rule examples,https://crmsupport.freshworks.com/support/solutions/articles/50000009491-automation-rules-examples-ticket-creation,2026-09-06
+43,Salesforce,Sales Cloud,https://www.salesforce.com/eu/sales/cloud/,2026-09-06
+44,ServiceNow,IntegrationHub setup,https://www.servicenow.com/docs/r/integrate-applications/integration-hub/set-up-flow-ihub.html,2026-09-06
+45,ServiceNow,IntegrationHub steps,https://www.servicenow.com/docs/r/integrate-applications/integration-hub/integration-steps.html,2026-09-06
+46,ServiceNow,Flow Designer,https://www.servicenow.com/docs/r/xanadu/application-development/flow-designer.html,2026-09-06
+47,ServiceNow,External trigger definitions,https://www.servicenow.com/docs/r/yokohama/build-workflows/workflow-studio/create-a-flow-with-an-external-trigger-definition.html,2026-09-06
+48,ServiceNow,REST trigger,https://www.servicenow.com/docs/r/integrate-applications/integration-hub/rest-trigger.html,2026-09-06
+49,Intercom,Inbox automation workflow examples,https://www.intercom.com/help/en/articles/6559143-examples-of-inbox-automation-using-workflows,2026-09-06
+50,Intercom,Build inbox automations using workflows,https://www.intercom.com/help/en/articles/7857898-build-inbox-automations-using-workflows,2026-09-06
+51,HubSpot,Form automations,https://knowledge.hubspot.com/forms/form-automations,2026-09-06
+52,Pipedrive,Automations,https://support.pipedrive.com/en/article/workflow-automation,2026-09-06
+53,Zapier,What is Zapier?,https://help.zapier.com/hc/en-us/articles/37518970271245-What-is-Zapier,2026-09-06
+54,Make,Workflow and process automation integrations,https://www.make.com/en/integrations/category/workflow-process-automation,2026-09-06
+55,Make,Make integrations,https://www.make.com/en/integrations,2026-09-06
+56,Notion,Database automations,https://www.notion.com/help/database-automations,2026-09-06
+57,Notion,Automations help,https://www.notion.com/help/category/automations,2026-09-06
+58,Shopify,Shopify Flow,https://help.shopify.com/en/manual/shopify-flow,2026-09-06
+59,Shopify,Shopify Flow getting started,https://help.shopify.com/en/manual/shopify-flow/getting-started,2026-09-06
+60,Shopify,Shopify Flow reference,https://help.shopify.com/en/manual/shopify-flow/reference,2026-09-06
+61,Calendly,Create a routing form,https://calendly.com/help/how-to-create-a-routing-form,2026-09-06
+62,Zendesk,Creating webhooks,https://support.zendesk.com/hc/en-us/articles/4408839108378-Creating-webhooks-to-interact-with-third-party-systems,2026-09-06
+63,Zendesk,About triggers and how they work,https://support.zendesk.com/hc/en-us/articles/4408822236058-About-Zendesk-triggers-and-how-they-work,2026-09-06
+64,monday.com,Get started with monday automations,https://support.monday.com/hc/en-us/articles/360001222900-Get-started-with-monday-automations,2026-09-06
+65,Atlassian,Create and edit Jira automation rules,https://support.atlassian.com/cloud-automation/docs/create-and-edit-jira-automation-rules/,2026-09-06
+66,Atlassian,Get started with Jira automation,https://support.atlassian.com/cloud-automation/docs/get-started-with-jira-automation/,2026-09-06
+67,Atlassian,Components in Jira automation,https://support.atlassian.com/cloud-automation/docs/components-in-jira-automation/,2026-09-06
+68,Atlassian,Jira workflows overview,https://www.atlassian.com/software/jira/guides/workflows/overview,2026-09-06
+69,Stripe,Webhook handling,https://docs.stripe.com/webhooks,2026-09-06
+70,Stripe,Subscription webhooks,https://docs.stripe.com/billing/subscriptions/webhooks,2026-09-06
+71,Twilio SendGrid,Webhooks API reference,https://www.twilio.com/docs/sendgrid/api-reference/webhooks,2026-09-06
+72,Twilio SendGrid,Event webhook overview,https://www.twilio.com/docs/sendgrid/for-developers/tracking-events/twilio-sendgrid-event-webhook-overview,2026-09-06
+73,Twilio,Webhook usage,https://www.twilio.com/docs/usage/webhooks,2026-09-06
+74,Twilio,Messaging webhooks,https://www.twilio.com/docs/usage/webhooks/messaging-webhooks,2026-09-06
+75,Twilio,Messaging API,https://www.twilio.com/docs/messaging/api,2026-09-06
+76,Google,Google Forms help,https://support.google.com/docs/answer/6281888?hl=en,2026-09-06
+77,Google,Google Workspace Studio help,https://support.google.com/workspace-studio/answer/16444479?hl=en,2026-09-06
+78,HubSpot,Contacts API,https://developers.hubspot.com/docs/api-reference/latest/crm/objects/contacts/guide,2026-09-07
+79,HubSpot,Companies API,https://developers.hubspot.com/docs/api-reference/latest/crm/objects/companies/guide,2026-09-07
+80,HubSpot,Deals API,https://developers.hubspot.com/docs/api-reference/latest/crm/objects/deals/guide,2026-09-07
+81,HubSpot,Pipelines API,https://developers.hubspot.com/docs/api-reference/latest/crm/pipelines/guide,2026-09-07
+82,HubSpot,CRM Search API,https://developers.hubspot.com/docs/api-reference/latest/crm/search-the-crm,2026-09-07
+83,HubSpot,Owners API,https://developers.hubspot.com/docs/api-reference/latest/crm/owners/guide,2026-09-07
+84,HubSpot,Properties API,https://developers.hubspot.com/docs/api-reference/latest/crm/properties/guide,2026-09-07
+85,HubSpot,Associations API guide,https://developers.hubspot.com/docs/api-reference/latest/crm/associations/associate-records/guide,2026-09-07
+86,HubSpot,CRM Imports API,https://developers.hubspot.com/docs/api-reference/latest/crm/imports/guide,2026-09-07
+87,Pipedrive,Activities,https://support.pipedrive.com/en/article/activities,2026-09-07
+88,Pipedrive,Deals: what they are and how to add them,https://support.pipedrive.com/en/article/deals-what-they-are-and-how-to-add-them,2026-09-07
+89,Pipedrive,Leads vs. deals,https://support.pipedrive.com/en/article/leads-vs-deals,2026-09-07
+90,Pipedrive,How Pipedrive data is organized,https://support.pipedrive.com/en/article/how-is-pipedrive-data-organized,2026-09-07
+91,Pipedrive,Lead source in deals,https://support.pipedrive.com/en/article/lead-source-deals,2026-09-07
+92,Pipedrive,Custom fields,https://support.pipedrive.com/en/article/custom-fields,2026-09-07
+93,Pipedrive,Data fields in Pipedrive,https://support.pipedrive.com/en/article/data-fields-in-pipedrive,2026-09-07
+94,Pipedrive,Multiple pipelines,https://support.pipedrive.com/en/article/how-can-i-have-multiple-pipelines,2026-09-07
+95,Pipedrive,Pipeline stage design,https://support.pipedrive.com/en/article/how-can-i-customize-my-pipeline-stages,2026-09-07
+96,Pipedrive,Converting deals to leads,https://support.pipedrive.com/en/article/converting-deals-to-leads,2026-09-07
+97,Pipedrive,Archive deals and leads,https://support.pipedrive.com/en/article/archive-deals-leads,2026-09-07
+98,Microsoft,Dynamics 365 Sales overview,https://learn.microsoft.com/en-us/dynamics365/sales/overview,2026-09-07
+99,Microsoft,Manage leads,https://learn.microsoft.com/en-us/dynamics365/sales/lead-management-overview,2026-09-07
+100,Microsoft,Create or edit leads,https://learn.microsoft.com/en-us/dynamics365/sales/create-edit-lead-sales,2026-09-07
+101,Microsoft,Manage opportunities,https://learn.microsoft.com/en-us/dynamics365/sales/opportunity-management-overview,2026-09-07
+102,Microsoft,Create or edit opportunities,https://learn.microsoft.com/en-us/dynamics365/sales/create-edit-opportunity-sales,2026-09-07
+103,Microsoft,Manage accounts and contacts,https://learn.microsoft.com/en-us/dynamics365/sales/accounts-contacts,2026-09-07
+104,Microsoft,Manage Dataverse auditing,https://learn.microsoft.com/en-us/power-platform/admin/manage-dataverse-auditing,2026-09-07
+105,Microsoft,Dataverse auditing architecture,https://learn.microsoft.com/en-us/power-platform/architecture/key-concepts/dataverse-auditing,2026-09-07
+106,Odoo,Convert leads into opportunities,https://www.odoo.com/documentation/19.0/applications/sales/crm/acquire_leads/convert.html,2026-09-07
+107,Odoo,CRM activities and activity plans,https://www.odoo.com/documentation/19.0/applications/sales/crm/optimize/utilize_activities.html,2026-09-07
+108,Odoo,Pipeline analysis,https://www.odoo.com/documentation/19.0/applications/sales/crm/performance/win_loss.html,2026-09-07
+109,Odoo,Expected revenue report,https://www.odoo.com/documentation/19.0/applications/sales/crm/performance/expected_revenue_report.html,2026-09-07
+110,SAP,Opportunities,https://help.sap.com/docs/sap-cloud-for-customer/solution-guide-for-sap-sales-cloud/opportunities,2026-09-07
+111,SAP,Create Opportunities,https://help.sap.com/docs/sap-cloud-for-customer/solution-guide-for-sap-sales-cloud/create-opportunities,2026-09-07
+112,SAP,Manage Opportunities,https://help.sap.com/docs/sap-cloud-for-customer/solution-guide-for-sap-sales-cloud/manage-opportunities,2026-09-07
+113,SAP,Evaluate Opportunities,https://help.sap.com/docs/sap-cloud-for-customer/solution-guide-for-sap-sales-cloud/evaluate-opportunities,2026-09-07
+114,SAP,Activities,https://help.sap.com/docs/sap-cloud-for-customer/solution-guide-for-sap-sales-cloud/activities,2026-09-07
+115,SAP,Sales Forecasting,https://help.sap.com/docs/sap-cloud-for-customer/solution-guide-for-sap-sales-cloud/sales-forecasting,2026-09-07
+116,Salesforce,Composite REST API,https://developer.salesforce.com/docs/atlas.en-us.api_rest.meta/api_rest/resources_composite_composite_post.htm,2026-09-07
+117,Salesforce,Customize Duplicate Rules,https://help.salesforce.com/s/articleView?id=sf.duplicate_rules_create.htm&language=en_US&type=5,2026-09-07
+118,Salesforce,Pub/Sub API introduction,https://developer.salesforce.com/docs/platform/pub-sub-api/guide/intro.html,2026-09-07
+119,Salesforce,Change Data Capture quick start,https://developer.salesforce.com/docs/platform/pub-sub-api/guide/qs-set-up-events.html,2026-09-07
+120,SQLite,Transactions,https://www.sqlite.org/lang_transaction.html,2026-09-07
+121,SQLite,FTS5 extension,https://www.sqlite.org/fts5.html,2026-09-07
+122,SQLite,Write-Ahead Logging,https://www.sqlite.org/wal.html,2026-09-07
+123,SQLite,PRAGMA integrity_check,https://www.sqlite.org/pragma.html#pragma_integrity_check,2026-09-07
+124,SQLite,JSON functions,https://www.sqlite.org/json1.html,2026-09-07
+125,SQLite,STRICT tables,https://www.sqlite.org/stricttables.html,2026-09-07
+126,SQLite,Atomic Commit,https://www.sqlite.org/atomiccommit.html,2026-09-07
+127,SQLite,Foreign key support,https://www.sqlite.org/foreignkeys.html,2026-09-07
+128,SQLite,SQLite as an application file format,https://www.sqlite.org/appfileformat.html,2026-09-07
+129,OWASP,SQL Injection Prevention Cheat Sheet,https://cheatsheetseries.owasp.org/cheatsheets/SQL_Injection_Prevention_Cheat_Sheet.html,2026-09-07
+130,OWASP,Input Validation Cheat Sheet,https://cheatsheetseries.owasp.org/cheatsheets/Input_Validation_Cheat_Sheet.html,2026-09-07
+131,OWASP,Logging Cheat Sheet,https://cheatsheetseries.owasp.org/cheatsheets/Logging_Cheat_Sheet.html,2026-09-07
+132,OWASP,Injection Prevention Cheat Sheet,https://cheatsheetseries.owasp.org/cheatsheets/Injection_Prevention_Cheat_Sheet.html,2026-09-07
+133,NIST,Cybersecurity Framework 2.0,https://www.nist.gov/publications/nist-cybersecurity-framework-csf-20,2026-09-07
+134,RFC,RFC 8259 JSON,https://www.rfc-editor.org/rfc/rfc8259.html,2026-09-07
+135,RFC,RFC 4180 CSV,https://www.rfc-editor.org/rfc/rfc4180.html,2026-09-07
+136,RFC,RFC 3339 Date and Time,https://www.rfc-editor.org/rfc/rfc3339.html,2026-09-07
+137,ISO,ISO 4217 Currency codes,https://www.iso.org/iso-4217-currency-codes.html,2026-09-07
+138,Academic,"Payne & Frow (2005), A Strategic Framework for Customer Relationship Management",https://doi.org/10.1509/jmkg.2005.69.4.167,2026-09-07
+139,Academic,"Reinartz, Krafft & Hoyer (2004), The CRM Process: Measurement and Impact on Performance",https://doi.org/10.1509/jmkr.41.3.293.35991,2026-09-07
+140,Academic,"Lemon & Verhoef (2016), Understanding Customer Experience Throughout the Customer Journey",https://doi.org/10.1509/jm.15.0420,2026-09-07
+141,Academic,"Kumar & Reinartz, Customer Relationship Management: Concept, Strategy, and Tools, 3rd ed.",https://link.springer.com/book/10.1007/978-3-662-55381-7,2026-09-07
+142,Academic,"Tversky & Kahneman (1981), The Framing of Decisions and the Psychology of Choice",https://doi.org/10.1126/science.7455683,2026-09-07
+143,Nobel Prize,2002 Prize in Economic Sciences press release: Daniel Kahneman and Vernon L. Smith,https://www.nobelprize.org/prizes/economic-sciences/2002/press-release/,2026-09-07

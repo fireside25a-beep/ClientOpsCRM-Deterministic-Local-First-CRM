@@ -1,0 +1,94 @@
+{
+  "id": "clr_errors_00001",
+  "name": "ClientOps Relay — Error Sink",
+  "active": false,
+  "nodes": [
+    {
+      "id": "error-trigger",
+      "name": "Workflow Error",
+      "type": "n8n-nodes-base.errorTrigger",
+      "typeVersion": 1,
+      "position": [
+        0,
+        160
+      ],
+      "parameters": {}
+    },
+    {
+      "id": "error-sanitize",
+      "name": "Sanitize Failure",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        240,
+        160
+      ],
+      "parameters": {
+        "mode": "runOnceForAllItems",
+        "language": "javaScript",
+        "jsCode": "return $input.all().map((item) => {\n  const data = item.json ?? {};\n  const execution = data.execution ?? {};\n  const workflow = data.workflow ?? {};\n  const error = execution.error ?? data.error ?? {};\n  return { json: {\n    workflowName: String(workflow.name ?? 'unknown').slice(0, 255),\n    workflowId: String(workflow.id ?? '').slice(0, 128),\n    executionId: String(execution.id ?? '').slice(0, 128),\n    lastNode: String(execution.lastNodeExecuted ?? '').slice(0, 255),\n    message: String(error.message ?? 'unknown workflow error').slice(0, 2000),\n    context: { mode: execution.mode ?? 'unknown', retryOf: execution.retryOf ?? null },\n  } };\n});"
+      }
+    },
+    {
+      "id": "error-store",
+      "name": "Record Failure",
+      "type": "n8n-nodes-base.postgres",
+      "typeVersion": 2.7,
+      "position": [
+        480,
+        160
+      ],
+      "parameters": {
+        "operation": "executeQuery",
+        "query": "SELECT clientops.record_workflow_failure($1, $2, $3, $4, $5, $6) AS id;",
+        "options": {
+          "queryReplacement": "={{ [ $json.workflowName, $json.workflowId, $json.executionId, $json.lastNode, $json.message, $json.context.mode ] }}"
+        }
+      },
+      "credentials": {
+        "postgres": {
+          "id": "clientops-postgres",
+          "name": "ClientOps PostgreSQL"
+        }
+      }
+    }
+  ],
+  "connections": {
+    "Workflow Error": {
+      "main": [
+        [
+          {
+            "node": "Sanitize Failure",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Sanitize Failure": {
+      "main": [
+        [
+          {
+            "node": "Record Failure",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "settings": {
+    "executionOrder": "v1",
+    "saveDataErrorExecution": "none",
+    "saveDataSuccessExecution": "none",
+    "saveManualExecutions": false,
+    "saveExecutionProgress": false,
+    "executionTimeout": 30,
+    "timezone": "Asia/Nicosia"
+  },
+  "pinData": {},
+  "meta": {
+    "templateCredsSetupCompleted": true
+  },
+  "tags": []
+}

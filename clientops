@@ -1,0 +1,331 @@
+#!/bin/sh
+set -eu
+
+project_root=$(CDPATH= cd -- "$(dirname -- "$0")" && pwd)
+environment_file="$project_root/.env"
+
+generate_secret() {
+    if command -v openssl >/dev/null 2>&1; then
+        openssl rand -hex 32
+    elif command -v node >/dev/null 2>&1; then
+        node -e "process.stdout.write(require('node:crypto').randomBytes(32).toString('hex'))"
+    else
+        printf '%s\n' 'OpenSSL or Node.js is required to generate secrets.' >&2
+        exit 1
+    fi
+}
+
+require_docker() {
+    if ! command -v docker >/dev/null 2>&1 || ! docker compose version >/dev/null 2>&1; then
+        printf '%s\n' 'Docker with the Compose plugin is required.' >&2
+        exit 1
+    fi
+}
+
+setup_environment() {
+    owner_email=${1:-owner@clientops.local}
+    initial_timezone=${2:-UTC}
+    if [ "${#owner_email}" -gt 254 ] ||
+       ! printf '%s\n' "$owner_email" | grep -Eq '^[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,63}$'; then
+        printf '%s\n' 'Owner email must use a shell-safe address format.' >&2
+        exit 1
+    fi
+    if ! printf '%s\n' "$initial_timezone" | grep -Eq '^[A-Za-z0-9_+-]+(/[A-Za-z0-9_+-]+)*$'; then
+        printf '%s\n' 'Timezone must be a safe IANA name such as UTC or Europe/London.' >&2
+        exit 1
+    fi
+    if [ -e "$environment_file" ]; then
+        printf '%s\n' '.env already exists; leaving every secret unchanged.'
+        return
+    fi
+    umask 077
+    postgres_admin_password=$(generate_secret)
+    n8n_db_password=$(generate_secret)
+    clientops_db_password=$(generate_secret)
+    n8n_encryption_key=$(generate_secret)
+    runner_token=$(generate_secret)
+    intake_api_key=$(generate_secret)
+    admin_api_key=$(generate_secret)
+    topic_suffix=$(generate_secret)
+    edge_password=$(generate_secret)
+    {
+        printf 'POSTGRES_ADMIN_PASSWORD=%s\n' "$postgres_admin_password"
+        printf 'N8N_DB_PASSWORD=%s\n' "$n8n_db_password"
+        printf 'CLIENTOPS_DB_PASSWORD=%s\n' "$clientops_db_password"
+        printf 'N8N_ENCRYPTION_KEY=%s\n' "$n8n_encryption_key"
+        printf 'N8N_RUNNERS_AUTH_TOKEN=%s\n' "$runner_token"
+        printf 'CLIENTOPS_INTAKE_API_KEY=%s\n' "$intake_api_key"
+        printf 'CLIENTOPS_ADMIN_API_KEY=%s\n' "$admin_api_key"
+        printf 'CLIENTOPS_OWNER_EMAIL=%s\n' "$owner_email"
+        printf 'CLIENTOPS_NTFY_TOPIC=clientops-%s\n' "$(printf '%.16s' "$topic_suffix")"
+        printf 'CLIENTOPS_TIMEZONE=%s\n' "$initial_timezone"
+        printf 'CLIENTOPS_EDGE_MODE=local\n'
+        printf 'CLIENTOPS_PUBLIC_HOST=localhost\n'
+        printf 'CLIENTOPS_PUBLIC_ORIGIN=https://localhost:8443\n'
+        printf 'CLIENTOPS_ACME_EMAIL=\n'
+        printf 'CLIENTOPS_EDGE_BIND_HTTP=127.0.0.1:8080\n'
+        printf 'CLIENTOPS_EDGE_BIND_HTTPS=127.0.0.1:8443\n'
+        printf 'CLIENTOPS_EDGE_USER=clientops\n'
+        printf 'CLIENTOPS_EDGE_PASSWORD=%s\n' "$edge_password"
+    } >"$environment_file"
+    chmod 600 "$environment_file"
+    node "$project_root/scripts/configure-edge.mjs" render >/dev/null
+    printf '%s\n' 'Generated .env with private credentials and loopback-only HTTPS edge configuration (mode 0600).'
+    printf '%s\n' 'Use ./clientops edge-credentials to display the generated editor edge login.'
+}
+
+require_environment() {
+    if [ ! -f "$environment_file" ]; then
+        setup_environment
+    fi
+    configured_timezone=$(sed -n 's/^CLIENTOPS_TIMEZONE=//p' "$environment_file")
+    if [ -z "$configured_timezone" ]; then
+        printf '%s\n' '.env predates v1.1. Run ./clientops set-timezone UTC (or another IANA timezone) before upgrading.' >&2
+        exit 1
+    fi
+    if ! grep -q '^CLIENTOPS_EDGE_MODE=' "$environment_file"; then
+        printf '%s\n' '.env predates v1.2.1 edge hardening. Run ./clientops set-local once, then optionally ./clientops set-public HOST EMAIL.' >&2
+        exit 1
+    fi
+}
+
+render_edge() {
+    node "$project_root/scripts/configure-edge.mjs" render >/dev/null
+}
+
+set_timezone() {
+    timezone=${1:-}
+    if [ -z "$timezone" ] ||
+       ! printf '%s\n' "$timezone" | grep -Eq '^[A-Za-z0-9_+-]+(/[A-Za-z0-9_+-]+)*$'; then
+        printf '%s\n' 'Timezone must be a safe IANA name such as UTC or Europe/London.' >&2
+        exit 1
+    fi
+    if [ ! -f "$environment_file" ]; then
+        setup_environment
+    fi
+    temporary_environment=$(mktemp "$project_root/.env.timezone.XXXXXX")
+    trap 'rm -f "$temporary_environment"' EXIT HUP INT TERM
+    awk -v timezone="$timezone" '
+      BEGIN { replaced = 0 }
+      /^CLIENTOPS_TIMEZONE=/ {
+        if (!replaced) print "CLIENTOPS_TIMEZONE=" timezone
+        replaced = 1
+        next
+      }
+      { print }
+      END { if (!replaced) print "CLIENTOPS_TIMEZONE=" timezone }
+    ' "$environment_file" >"$temporary_environment"
+    chmod 600 "$temporary_environment"
+    mv "$temporary_environment" "$environment_file"
+    trap - EXIT HUP INT TERM
+    printf 'Configured CLIENTOPS_TIMEZONE=%s. The database will validate it during startup.\n' "$timezone"
+}
+
+set_public() {
+    require_environment
+    node "$project_root/scripts/configure-edge.mjs" set-public "${1:-}" "${2:-}"
+    printf '%s\n' 'Public mode configured. DNS must point to this host before ACME can issue a trusted certificate.'
+}
+
+set_local() {
+    if [ ! -f "$environment_file" ]; then
+        setup_environment
+    else
+        node "$project_root/scripts/configure-edge.mjs" set-local
+    fi
+    printf '%s\n' 'Loopback-only HTTPS mode configured.'
+}
+
+edge_credentials() {
+    require_environment
+    user=$(sed -n 's/^CLIENTOPS_EDGE_USER=//p' "$environment_file")
+    password=$(sed -n 's/^CLIENTOPS_EDGE_PASSWORD=//p' "$environment_file")
+    [ -n "$user" ] && [ -n "$password" ] || { printf '%s\n' 'Edge credentials are missing.' >&2; exit 1; }
+    printf 'Edge user: %s\n' "$user"
+    printf 'Edge password: %s\n' "$password"
+}
+
+compose() {
+    docker compose --project-directory "$project_root" --env-file "$environment_file" "$@"
+}
+
+public_origin() {
+    sed -n 's/^CLIENTOPS_PUBLIC_ORIGIN=//p' "$environment_file"
+}
+
+edge_mode() {
+    sed -n 's/^CLIENTOPS_EDGE_MODE=//p' "$environment_file"
+}
+
+curl_edge() {
+    if [ "$(edge_mode)" = local ]; then
+        curl --insecure "$@"
+    else
+        curl "$@"
+    fi
+}
+
+crm_binary="$project_root/crm/build/clientops-crm"
+crm_database=${CLIENTOPS_CRM_DB:-"$project_root/runtime/clientops-crm.db"}
+
+ensure_crm_build() {
+    if [ ! -x "$crm_binary" ] || [ "$project_root/crm/src/clientops_crm.cpp" -nt "$crm_binary" ]; then
+        if ! command -v make >/dev/null 2>&1 || ! command -v c++ >/dev/null 2>&1 || ! command -v pkg-config >/dev/null 2>&1; then
+            printf '%s
+' 'Building ClientOpsCRM requires make, a C++17 compiler, pkg-config, and SQLite development files.' >&2
+            exit 1
+        fi
+        make -C "$project_root/crm" release
+    fi
+}
+
+ensure_crm_database() {
+    ensure_crm_build
+    mkdir -p "$project_root/runtime"
+    chmod 700 "$project_root/runtime"
+    if [ ! -f "$crm_database" ]; then
+        umask 077
+        "$crm_binary" --db "$crm_database" init >/dev/null
+        chmod 600 "$crm_database"
+        printf 'Initialized CRM database: %s
+' "$crm_database" >&2
+    fi
+}
+
+run_crm() {
+    ensure_crm_database
+    "$crm_binary" --db "$crm_database" "$@"
+}
+
+wait_until_ready() {
+    intake_key=$(sed -n 's/^CLIENTOPS_INTAKE_API_KEY=//p' "$environment_file")
+    origin=$(public_origin)
+    attempt=1
+    while [ "$attempt" -le 60 ]; do
+        if compose exec -T n8n sh -c 'wget -q --spider http://127.0.0.1:5678/healthz/readiness' >/dev/null 2>&1 &&
+           compose exec -T task-runner node -e \
+             "fetch('http://127.0.0.1:5680').then(r=>{if(!r.ok)process.exit(1)}).catch(()=>process.exit(1))" \
+             >/dev/null 2>&1; then
+            probe_status=$(curl_edge --silent --output /dev/null --write-out '%{http_code}' \
+                --header 'Content-Type: application/json' \
+                --header "X-ClientOps-Intake-Key: $intake_key" \
+                --header 'Idempotency-Key: readiness:probe' \
+                --data '{}' \
+                "$origin/webhook/clientops/leads" 2>/dev/null || true)
+            if [ "$probe_status" = 422 ]; then
+                return
+            fi
+        fi
+        sleep 2
+        attempt=$((attempt + 1))
+    done
+    printf '%s\n' 'The edge, n8n, and external Code runner did not become ready within two minutes.' >&2
+    compose ps >&2
+    exit 1
+}
+
+case "${1:-help}" in
+    crm)
+        shift
+        run_crm "$@"
+        ;;
+    crm-build)
+        ensure_crm_build
+        "$crm_binary" version
+        ;;
+    crm-import-relay)
+        "$project_root/crm/scripts/import-relay.sh"
+        ;;
+    setup)
+        setup_environment "${2:-owner@clientops.local}" "${3:-UTC}"
+        ;;
+    set-timezone)
+        set_timezone "${2:-}"
+        ;;
+    set-regions)
+        shift
+        node "$project_root/scripts/configure-regions.mjs" "$@"
+        ;;
+    set-public)
+        set_public "${2:-}" "${3:-}"
+        ;;
+    set-local)
+        set_local
+        ;;
+    render-edge)
+        require_environment
+        render_edge
+        printf '%s\n' 'Edge runtime configuration rendered.'
+        ;;
+    edge-credentials)
+        edge_credentials
+        ;;
+    up)
+        require_docker
+        require_environment
+        render_edge
+        compose up --build --detach
+        wait_until_ready
+        origin=$(public_origin)
+        printf '%s\n' 'ClientOps Relay is ready.'
+        printf 'n8n edge: %s\n' "$origin"
+        printf '%s\n' 'Mailpit:  http://localhost:8025'
+        printf '%s\n' 'ntfy:     http://localhost:8081'
+        ;;
+    down)
+        require_docker
+        require_environment
+        render_edge
+        compose down
+        ;;
+    status)
+        require_docker
+        require_environment
+        render_edge
+        compose ps
+        ;;
+    logs)
+        require_docker
+        require_environment
+        render_edge
+        shift
+        compose logs --follow --tail=200 "$@"
+        ;;
+    validate)
+        node "$project_root/scripts/build-workflows.mjs" >/dev/null
+        node "$project_root/tests/workflows.mjs"
+        node "$project_root/tests/edge-security.mjs"
+        ;;
+    verify|demo)
+        require_docker
+        require_environment
+        render_edge
+        compose up --build --detach
+        wait_until_ready
+        "$project_root/tests/e2e.sh"
+        ;;
+    help|-h|--help)
+        printf '%s\n' 'ClientOps Relay 1.2.1 + ClientOpsCRM 2.0.0'
+        printf '%s\n' '  ./clientops crm COMMAND ...               Run the compiled CRM (auto-initializes local DB)'
+        printf '%s\n' '  ./clientops crm-build                     Build the C++17 CRM with strict warnings'
+        printf '%s\n' '  ./clientops crm-import-relay              Idempotently import live Relay leads into CRM'
+        printf '%s\n' '  ./clientops setup [email] [timezone]      Generate private local configuration'
+        printf '%s\n' '  ./clientops set-public HOST EMAIL       Enable public 80/443 + ACME TLS edge'
+        printf '%s\n' '  ./clientops set-local                   Return to loopback-only HTTPS edge'
+        printf '%s\n' '  ./clientops edge-credentials            Show generated n8n editor edge login'
+        printf '%s\n' '  ./clientops render-edge                 Regenerate edge runtime configuration'
+        printf '%s\n' '  ./clientops set-timezone NAME           Set the IANA business timezone'
+        printf '%s\n' '  ./clientops set-regions any             Accept requests from every region'
+        printf '%s\n' '  ./clientops set-regions allowlist NAME... Restrict configured regions'
+        printf '%s\n' '  ./clientops up                           Build and start the complete stack'
+        printf '%s\n' '  ./clientops verify                       Run the black-box acceptance suite'
+        printf '%s\n' '  ./clientops validate                     Validate workflow and edge contracts'
+        printf '%s\n' '  ./clientops status                       Show service health'
+        printf '%s\n' '  ./clientops logs [service]               Follow logs'
+        printf '%s\n' '  ./clientops down                         Stop services without deleting data'
+        ;;
+    *)
+        printf 'Unknown command: %s\n' "$1" >&2
+        exit 1
+        ;;
+esac

@@ -1,0 +1,20 @@
+claim_id,claim,source_ids,implementation_consequence
+CRM-01,"CRM is a cross-functional process, not only a contact store",138;139;141,Implemented as linked lifecycle/state/work-history primitives
+CRM-02,Accounts/companies and contacts/people are separate durable objects,78;79;85;103;90,accounts + contacts + FK association
+CRM-03,Qualified opportunity/deal is distinct from early lead,89;99;106;110;112,explicit lead state and transactional conversion
+CRM-04,Deals belong to pipelines/stages and terminate won/lost,88;95;108;110,pipeline/stage/deal state machine
+CRM-05,Activities/follow-up attach to business objects,87;107;114,tasks + activities + notes
+CRM-06,Custom properties are first-class extensibility,84;92;93,custom_values with constrained keys
+CRM-07,Search is a first-class CRM retrieval surface,82,SQLite FTS5 index
+CRM-08,Import should preserve stable identifiers and explicit outcomes,86,relay_ticket_id + import counts + --skip-existing
+CRM-09,CRM mutations require auditable history,104;105,append-only audit_log with actor and before/after JSON
+CRM-10,Duplicate identity requires explicit controls,78;99;117,unique normalized domain/email/Relay ID + dedupe signals
+CRM-11,Pipeline value/probability supports inspectable forecast views,95;109;115,integer weighted forecast by currency/stage
+ENG-01,Prepared statements separate code from untrusted SQL data,129;132,SQLite prepared statements/bindings
+ENG-02,"Input validation should be early, syntactic and semantic",130,deterministic parsers + DB CHECK constraints
+ENG-03,Compound state changes require explicit transaction semantics,120;126,BEGIN IMMEDIATE lead conversion + rollback guard
+ENG-04,Full-text index has integrity/rebuild semantics,121,FTS5 trigger maintenance + init rebuild
+ENG-05,Foreign-key and database integrity need executable checks,123;127,doctor integrity_check + foreign_key_check
+ENG-06,Structured provenance metadata should remain valid JSON,124;134,metadata_json CHECK(json_valid) + JSON export
+DEC-01,Forecast probabilities are assumptions subject to human judgment bias,142;143,"forecast documented as deterministic arithmetic, not prediction"
+CX-01,Customer experience spans touch points over time,140,"source, message, metadata, notes, activities and audit retained"

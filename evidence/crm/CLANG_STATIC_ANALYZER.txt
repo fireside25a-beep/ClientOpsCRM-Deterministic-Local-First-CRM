@@ -1,0 +1,3 @@
+PASS
+Command class: clang++ C++17 static analyzer with -Wall -Wextra -Wpedantic -Werror and SQLite include flags.
+Result: zero diagnostics emitted for crm/src/clientops_crm.cpp.

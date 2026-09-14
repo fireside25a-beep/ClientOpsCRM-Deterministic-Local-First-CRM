@@ -1,0 +1,268 @@
+% Options for packages loaded elsewhere
+\PassOptionsToPackage{unicode}{hyperref}
+\PassOptionsToPackage{hyphens}{url}
+%
+\documentclass[
+]{article}
+\usepackage{amsmath,amssymb}
+\usepackage{iftex}
+\ifPDFTeX
+  \usepackage[T1]{fontenc}
+  \usepackage[utf8]{inputenc}
+  \usepackage{textcomp} % provide euro and other symbols
+\else % if luatex or xetex
+  \usepackage{unicode-math} % this also loads fontspec
+  \defaultfontfeatures{Scale=MatchLowercase}
+  \defaultfontfeatures[\rmfamily]{Ligatures=TeX,Scale=1}
+\fi
+\usepackage{lmodern}
+\ifPDFTeX\else
+  % xetex/luatex font selection
+  \setmainfont[]{DejaVu Sans}
+  \setmonofont[]{DejaVu Sans Mono}
+\fi
+% Use upquote if available, for straight quotes in verbatim environments
+\IfFileExists{upquote.sty}{\usepackage{upquote}}{}
+\IfFileExists{microtype.sty}{% use microtype if available
+  \usepackage[]{microtype}
+  \UseMicrotypeSet[protrusion]{basicmath} % disable protrusion for tt fonts
+}{}
+\makeatletter
+\@ifundefined{KOMAClassName}{% if non-KOMA class
+  \IfFileExists{parskip.sty}{%
+    \usepackage{parskip}
+  }{% else
+    \setlength{\parindent}{0pt}
+    \setlength{\parskip}{6pt plus 2pt minus 1pt}}
+}{% if KOMA class
+  \KOMAoptions{parskip=half}}
+\makeatother
+\usepackage{xcolor}
+\usepackage[margin=24mm]{geometry}
+\usepackage{color}
+\usepackage{fancyvrb}
+\newcommand{\VerbBar}{|}
+\newcommand{\VERB}{\Verb[commandchars=\\\{\}]}
+\DefineVerbatimEnvironment{Highlighting}{Verbatim}{commandchars=\\\{\}}
+% Add ',fontsize=\small' for more characters per line
+\newenvironment{Shaded}{}{}
+\newcommand{\AlertTok}[1]{\textcolor[rgb]{1.00,0.00,0.00}{\textbf{#1}}}
+\newcommand{\AnnotationTok}[1]{\textcolor[rgb]{0.38,0.63,0.69}{\textbf{\textit{#1}}}}
+\newcommand{\AttributeTok}[1]{\textcolor[rgb]{0.49,0.56,0.16}{#1}}
+\newcommand{\BaseNTok}[1]{\textcolor[rgb]{0.25,0.63,0.44}{#1}}
+\newcommand{\BuiltInTok}[1]{\textcolor[rgb]{0.00,0.50,0.00}{#1}}
+\newcommand{\CharTok}[1]{\textcolor[rgb]{0.25,0.44,0.63}{#1}}
+\newcommand{\CommentTok}[1]{\textcolor[rgb]{0.38,0.63,0.69}{\textit{#1}}}
+\newcommand{\CommentVarTok}[1]{\textcolor[rgb]{0.38,0.63,0.69}{\textbf{\textit{#1}}}}
+\newcommand{\ConstantTok}[1]{\textcolor[rgb]{0.53,0.00,0.00}{#1}}
+\newcommand{\ControlFlowTok}[1]{\textcolor[rgb]{0.00,0.44,0.13}{\textbf{#1}}}
+\newcommand{\DataTypeTok}[1]{\textcolor[rgb]{0.56,0.13,0.00}{#1}}
+\newcommand{\DecValTok}[1]{\textcolor[rgb]{0.25,0.63,0.44}{#1}}
+\newcommand{\DocumentationTok}[1]{\textcolor[rgb]{0.73,0.13,0.13}{\textit{#1}}}
+\newcommand{\ErrorTok}[1]{\textcolor[rgb]{1.00,0.00,0.00}{\textbf{#1}}}
+\newcommand{\ExtensionTok}[1]{#1}
+\newcommand{\FloatTok}[1]{\textcolor[rgb]{0.25,0.63,0.44}{#1}}
+\newcommand{\FunctionTok}[1]{\textcolor[rgb]{0.02,0.16,0.49}{#1}}
+\newcommand{\ImportTok}[1]{\textcolor[rgb]{0.00,0.50,0.00}{\textbf{#1}}}
+\newcommand{\InformationTok}[1]{\textcolor[rgb]{0.38,0.63,0.69}{\textbf{\textit{#1}}}}
+\newcommand{\KeywordTok}[1]{\textcolor[rgb]{0.00,0.44,0.13}{\textbf{#1}}}
+\newcommand{\NormalTok}[1]{#1}
+\newcommand{\OperatorTok}[1]{\textcolor[rgb]{0.40,0.40,0.40}{#1}}
+\newcommand{\OtherTok}[1]{\textcolor[rgb]{0.00,0.44,0.13}{#1}}
+\newcommand{\PreprocessorTok}[1]{\textcolor[rgb]{0.74,0.48,0.00}{#1}}
+\newcommand{\RegionMarkerTok}[1]{#1}
+\newcommand{\SpecialCharTok}[1]{\textcolor[rgb]{0.25,0.44,0.63}{#1}}
+\newcommand{\SpecialStringTok}[1]{\textcolor[rgb]{0.73,0.40,0.53}{#1}}
+\newcommand{\StringTok}[1]{\textcolor[rgb]{0.25,0.44,0.63}{#1}}
+\newcommand{\VariableTok}[1]{\textcolor[rgb]{0.10,0.09,0.49}{#1}}
+\newcommand{\VerbatimStringTok}[1]{\textcolor[rgb]{0.25,0.44,0.63}{#1}}
+\newcommand{\WarningTok}[1]{\textcolor[rgb]{0.38,0.63,0.69}{\textbf{\textit{#1}}}}
+\setlength{\emergencystretch}{3em} % prevent overfull lines
+\providecommand{\tightlist}{%
+  \setlength{\itemsep}{0pt}\setlength{\parskip}{0pt}}
+\setcounter{secnumdepth}{-\maxdimen} % remove section numbering
+\ifLuaTeX
+  \usepackage{selnolig}  % disable illegal ligatures
+\fi
+\usepackage{bookmark}
+\IfFileExists{xurl.sty}{\usepackage{xurl}}{} % add URL line breaks if available
+\urlstyle{same}
+\hypersetup{
+  hidelinks,
+  pdfcreator={LaTeX via pandoc}}
+
+\author{}
+\date{}
+
+\begin{document}
+
+\section{ClientOpsCRM 2.0.0 CLI API
+Reference}\label{clientopscrm-200-cli-api-reference}
+
+\subsection{Invocation}\label{invocation}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{clientops{-}crm [{-}{-}db FILE] [{-}{-}actor NAME] [{-}{-}json] COMMAND ...}
+\end{Highlighting}
+\end{Shaded}
+
+\texttt{-\/-db} selects the SQLite application file. \texttt{-\/-actor}
+is written into audit provenance for mutations. \texttt{-\/-json}
+selects structured output where supported. Commands return nonzero on
+validation, state, database or I/O failure.
+
+\subsection{Core}\label{core}
+
+\begin{itemize}
+\tightlist
+\item
+  \texttt{init} --- create/validate schema, defaults, triggers and FTS
+  material. Fails closed on an unknown schema version.
+\item
+  \texttt{doctor} --- run structural and relational integrity gates.
+\item
+  \texttt{dashboard} --- counts plus open pipeline totals grouped by
+  currency.
+\item
+  \texttt{forecast} --- deterministic weighted value of open deals by
+  currency/stage.
+\item
+  \texttt{search\ TERM...} --- FTS5 query across indexed CRM text.
+\item
+  \texttt{dedupe} --- emit normalized email/phone/domain duplicate
+  signals.
+\item
+  \texttt{timeline\ -\/-entity\ account\textbar{}contact\textbar{}lead\textbar{}deal\ -\/-id\ ID}
+  --- business-event history.
+\item
+  \texttt{audit\ -\/-entity\ TYPE\ -\/-id\ ID} --- audit rows for the
+  selected record.
+\end{itemize}
+
+\subsection{Accounts}\label{accounts}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{account add {-}{-}name NAME [{-}{-}domain D] [{-}{-}website U] [{-}{-}industry I] [{-}{-}city C] [{-}{-}country C] [{-}{-}owner O]}
+\NormalTok{account list [{-}{-}status active|inactive] [{-}{-}owner O]}
+\NormalTok{account show ID}
+\NormalTok{account update ID [field options]}
+\end{Highlighting}
+\end{Shaded}
+
+Non-empty normalized domain is unique.
+
+\subsection{Contacts}\label{contacts}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{contact add [{-}{-}first F] [{-}{-}last L] [{-}{-}email E] [{-}{-}phone P] [{-}{-}account ID] [{-}{-}title T] [{-}{-}owner O]}
+\NormalTok{contact list [{-}{-}account ID] [{-}{-}owner O]}
+\NormalTok{contact show ID}
+\NormalTok{contact update ID [field options]}
+\end{Highlighting}
+\end{Shaded}
+
+At least first name, last name or email must be present. Non-empty
+normalized email is unique.
+
+\subsection{Leads}\label{leads}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{lead add {-}{-}name N [{-}{-}email E] [{-}{-}phone P] [{-}{-}company C] [{-}{-}source S] [{-}{-}message M]}
+\NormalTok{         [{-}{-}metadata{-}json JSON] [{-}{-}score 0..100] [{-}{-}priority low|medium|high]}
+\NormalTok{         [{-}{-}owner O] [{-}{-}relay{-}ticket UUID]}
+\NormalTok{lead list [{-}{-}status STATE] [{-}{-}owner O]}
+\NormalTok{lead show ID}
+\NormalTok{lead qualify ID}
+\NormalTok{lead disqualify ID {-}{-}reason TEXT}
+\NormalTok{lead convert ID [{-}{-}account ID] [{-}{-}deal{-}name N] [{-}{-}amount DECIMAL] [{-}{-}currency ISO]}
+\NormalTok{                [{-}{-}pipeline ID] [{-}{-}stage NAME|ID] [{-}{-}close YYYY{-}MM{-}DD] [{-}{-}owner O]}
+\NormalTok{lead import{-}csv {-}{-}in FILE|{-} [{-}{-}skip{-}existing]}
+\end{Highlighting}
+\end{Shaded}
+
+\texttt{metadata\_json} must parse as JSON and is bounded in size.
+\texttt{-\/-skip-existing} only skips rows carrying a non-empty Relay
+ticket already present; it does not silently discard unrelated
+uniqueness errors.
+
+\subsection{Pipelines and deals}\label{pipelines-and-deals}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{pipeline list}
+\NormalTok{pipeline add {-}{-}name NAME}
+\NormalTok{pipeline stage{-}add {-}{-}pipeline ID {-}{-}name NAME {-}{-}position N {-}{-}probability 0..100 [{-}{-}kind open|won|lost]}
+
+\NormalTok{deal add {-}{-}name N [{-}{-}account ID] [{-}{-}contact ID] [{-}{-}amount DECIMAL] [{-}{-}currency ISO]}
+\NormalTok{         [{-}{-}pipeline ID] [{-}{-}stage NAME|ID] [{-}{-}close YYYY{-}MM{-}DD] [{-}{-}owner O]}
+\NormalTok{deal list [{-}{-}status open|won|lost] [{-}{-}owner O] [{-}{-}pipeline ID]}
+\NormalTok{deal show ID}
+\NormalTok{deal move ID STAGE}
+\NormalTok{deal win ID}
+\NormalTok{deal lost ID {-}{-}reason TEXT}
+\end{Highlighting}
+\end{Shaded}
+
+Stage move synchronizes probability. A deal can be open only on an open
+stage, won only on a won stage, and lost only on a lost stage. Those
+rules are duplicated at the database trigger layer.
+
+\subsection{Work tracking}\label{work-tracking}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{task add {-}{-}entity TYPE {-}{-}id ID {-}{-}subject TEXT [{-}{-}type T] [{-}{-}due YYYY{-}MM{-}DD]}
+\NormalTok{         [{-}{-}priority P] [{-}{-}owner O]}
+\NormalTok{task list [{-}{-}status STATE] [{-}{-}owner O] [{-}{-}entity TYPE] [{-}{-}id ID]}
+\NormalTok{task done ID}
+\NormalTok{task cancel ID}
+\NormalTok{note add {-}{-}entity TYPE {-}{-}id ID {-}{-}body TEXT [{-}{-}author NAME]}
+\NormalTok{note list {-}{-}entity TYPE {-}{-}id ID}
+\NormalTok{field set {-}{-}entity TYPE {-}{-}id ID {-}{-}key KEY {-}{-}value VALUE}
+\NormalTok{field list {-}{-}entity TYPE {-}{-}id ID}
+\end{Highlighting}
+\end{Shaded}
+
+Allowed entity types are \texttt{account}, \texttt{contact},
+\texttt{lead}, \texttt{deal}.
+
+\subsection{Export}\label{export}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{export{-}json {-}{-}out FILE}
+\NormalTok{export{-}csv {-}{-}entity accounts|contacts|leads|deals|tasks {-}{-}out FILE}
+\end{Highlighting}
+\end{Shaded}
+
+JSON export has format marker \texttt{clientops-crm-export-v1}. CSV
+quoting handles commas, quotes and newlines. Lead CSV includes
+\texttt{metadata\_json}.
+
+\subsection{Integrated launcher API}\label{integrated-launcher-api}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{./clientops crm COMMAND ...}
+\NormalTok{./clientops crm{-}build}
+\NormalTok{./clientops crm{-}import{-}relay}
+\end{Highlighting}
+\end{Shaded}
+
+The launcher is part of the combined Relay/CRM source tree and preserves
+all Relay 1.2.1 commands.
+
+\subsection{Output contracts}\label{output-contracts}
+
+Creation commands in JSON mode return
+\texttt{\{\ "ok":\ true,\ "entity":\ ...,\ "id":\ ...\ \}}. Import
+returns imported/skipped counts. List/show/search/forecast surfaces
+return arrays. Dashboard and doctor return objects. Errors are written
+to stderr and use a nonzero process exit status; automation should use
+the exit code as the primary success signal.
+
+\end{document}

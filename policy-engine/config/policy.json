@@ -1,0 +1,74 @@
+{
+  "categories": [
+    {
+      "name": "sales",
+      "specialist": false,
+      "keywords": [
+        "quote",
+        "pricing",
+        "price",
+        "purchase",
+        "proposal",
+        "demo",
+        "consultation"
+      ]
+    },
+    {
+      "name": "support",
+      "specialist": true,
+      "keywords": [
+        "support",
+        "issue",
+        "problem",
+        "not working",
+        "cannot access",
+        "account locked",
+        "error"
+      ]
+    },
+    {
+      "name": "partnership",
+      "specialist": true,
+      "keywords": [
+        "partnership",
+        "partner",
+        "collaboration",
+        "referral",
+        "integration",
+        "reseller"
+      ]
+    }
+  ],
+  "fallback_category": "general",
+  "location_mode": "any",
+  "allowed_locations": [],
+  "unknown_location_serviceable": true,
+  "high_priority_keywords": [
+    "urgent",
+    "urgently",
+    "asap",
+    "critical",
+    "immediately",
+    "today",
+    "blocked",
+    "outage"
+  ],
+  "low_priority_keywords": [
+    "no rush",
+    "not urgent",
+    "whenever convenient",
+    "just researching"
+  ],
+  "spam_keywords": [
+    "buy backlinks",
+    "guest post placement",
+    "guaranteed page-one rankings",
+    "crypto investment opportunity",
+    "casino promotion"
+  ],
+  "out_of_scope_keywords": [
+    "employment application",
+    "press inquiry"
+  ],
+  "minimum_detail_words": 3
+}

@@ -1,0 +1,30 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1400" height="420" viewBox="0 0 1400 420" role="img" aria-labelledby="title desc">
+  <title id="title">ClientOpsCRM 2.0.0</title>
+  <desc id="desc">Compiled local-first CRM with C++17 SQLite core and deterministic C11 Relay subsystem.</desc>
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#09111f"/>
+      <stop offset="0.55" stop-color="#111a31"/>
+      <stop offset="1" stop-color="#07151a"/>
+    </linearGradient>
+    <linearGradient id="accent" x1="0" y1="0" x2="1" y2="0">
+      <stop offset="0" stop-color="#8b5cf6"/>
+      <stop offset="0.5" stop-color="#22d3ee"/>
+      <stop offset="1" stop-color="#34d399"/>
+    </linearGradient>
+    <filter id="glow"><feGaussianBlur stdDeviation="18"/></filter>
+  </defs>
+  <rect width="1400" height="420" rx="30" fill="url(#bg)"/>
+  <circle cx="1180" cy="85" r="160" fill="#22d3ee" opacity="0.08" filter="url(#glow)"/>
+  <circle cx="1280" cy="330" r="180" fill="#8b5cf6" opacity="0.08" filter="url(#glow)"/>
+  <rect x="74" y="72" width="14" height="276" rx="7" fill="url(#accent)"/>
+  <text x="125" y="150" fill="#f8fafc" font-family="Inter,Segoe UI,Arial,sans-serif" font-size="62" font-weight="800">ClientOpsCRM 2.0.0</text>
+  <text x="128" y="204" fill="#a5b4fc" font-family="Inter,Segoe UI,Arial,sans-serif" font-size="26" font-weight="600">Compiled local-first CRM • deterministic operations • explicit evidence boundaries</text>
+  <text x="128" y="260" fill="#cbd5e1" font-family="Inter,Segoe UI,Arial,sans-serif" font-size="22">C++17 + SQLite core  |  C11 Relay policy engine  |  Python integration tests  |  Docker/n8n deployment line</text>
+  <g transform="translate(126 300)" font-family="Inter,Segoe UI,Arial,sans-serif" font-size="17" font-weight="700">
+    <rect width="132" height="40" rx="20" fill="#172554" stroke="#6366f1"/><text x="26" y="26" fill="#c7d2fe">v2.0.0</text>
+    <rect x="148" width="176" height="40" rx="20" fill="#083344" stroke="#06b6d4"/><text x="170" y="26" fill="#a5f3fc">C++17 / SQLite</text>
+    <rect x="340" width="145" height="40" rx="20" fill="#052e2b" stroke="#10b981"/><text x="371" y="26" fill="#a7f3d0">27/27 CRM</text>
+    <rect x="501" width="178" height="40" rx="20" fill="#2e1065" stroke="#8b5cf6"/><text x="525" y="26" fill="#ddd6fe">Apache-2.0</text>
+  </g>
+</svg>

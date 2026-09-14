@@ -1,0 +1,36 @@
+{
+  "formatVersion": 1,
+  "sourceArchive": "clientops-relay-1.0.0.zip",
+  "sourceArchiveSha256": "d3963fa89c283a9328102ed2527151fe3fa27297efd722a031d6b612aac2b499",
+  "description": "Byte-for-byte frozen workflow fixtures used only to prove the stock-v1 upgrade path.",
+  "files": {
+    "01-api-lead-intake.json": {
+      "sha256": "ffaa29249c6e80ab35b6493d8f5660dfc2feed33d265504f8733e5184f06d5bf",
+      "semanticSha256": "6e70e1331109859b5a6e20475cf352be519d014e0247cd495bb5acae2554e227"
+    },
+    "20-outbox-dispatcher.json": {
+      "sha256": "1d0228783eaff830dcbe0f7ff253641910f0157c43939a907eb869e5f1a0a236",
+      "semanticSha256": "3aef1d546d5abb9f90f607c456b561d060a9c6f940e72720c14d473ff1bbf71f"
+    },
+    "30-sla-monitor.json": {
+      "sha256": "64788ff67a9a05947651f74af17625ec0772ffdfc7889d77477b451d4e908aff",
+      "semanticSha256": "516fa3a81a962c725c347bb950f89268606659469af58099f68da777b143f822"
+    },
+    "40-daily-digest.json": {
+      "sha256": "adab45387494d44733d149ee7bda76e22d613cbc57eb02f3c764d08e498e70fc",
+      "semanticSha256": "f1d6d7d979e7eb25d4181dde82532109063078cbd6827dcd7d833cb12db8d9c5"
+    },
+    "50-mark-contacted.json": {
+      "sha256": "ea7325897498ff150f5bf365341239de782af34920e26022507e993f5abe1a4f",
+      "semanticSha256": "e1e8b87cb9979039a6c0af718af86a5ee796f9bc01c4dc6523a3f37d1cc58efd"
+    },
+    "60-retention-maintenance.json": {
+      "sha256": "ff74fc51aa5b4fbba994bf2fd2f40ac2a8ecd6c300edcd10f3c4bef4810e8f6f",
+      "semanticSha256": "6dde0f8f1765d3f5777a5d7921190741ef98d8bcd5b7ccd2f2258e1f40bd6532"
+    },
+    "90-error-sink.json": {
+      "sha256": "0bdcea3024c250984fb9fd06751bd245b6db101e88fcc3f55531da7ad3af1ad0",
+      "semanticSha256": "3a0c53c27ae0d7d0deb1d4e52c8e644c183d2a6c327ad93268be42937d11acd4"
+    }
+  }
+}

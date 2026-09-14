@@ -1,0 +1,82 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1800" height="760" viewBox="0 0 1800 760">
+  <defs>
+    <pattern id="grid" width="32" height="32" patternUnits="userSpaceOnUse"><path d="M 32 0 L 0 0 0 32" fill="none" stroke="#1E293B" stroke-width="1"/></pattern>
+    <marker id="arrow" markerWidth="8" markerHeight="8" refX="7" refY="4" orient="auto"><path d="M0,0 L8,4 L0,8 z" fill="#94A3B8"/></marker>
+    <filter id="shadow"><feDropShadow dx="0" dy="10" stdDeviation="12" flood-opacity="0.25"/></filter>
+  </defs>
+  <rect width="1800" height="760" fill="#080D18"/>
+  <rect width="1800" height="760" fill="url(#grid)" opacity="0.7"/>
+  <text x="70" y="72" font-family="DejaVu Sans, sans-serif" font-size="35" font-weight="700" fill="#F8FAFC">ClientOps Relay — Outbox Dispatcher</text>
+  <text x="70" y="112" font-family="DejaVu Sans, sans-serif" font-size="17" fill="#94A3B8">Leased queue claims → fenced pre-send authorization → SMTP / ntfy routing → retry or dead letter</text>
+  <g font-family="DejaVu Sans, sans-serif" filter="url(#shadow)"><path d="M 234.0 280.3 C 269.0 280.3, 207.6 441.1, 242.6 441.1" fill="none" stroke="#64748B" stroke-width="2.5"  marker-end="url(#arrow)" opacity="0.9"/><path d="M 234.0 601.8 C 269.0 601.8, 207.6 441.1, 242.6 441.1" fill="none" stroke="#64748B" stroke-width="2.5"  marker-end="url(#arrow)" opacity="0.9"/><path d="M 406.6 441.1 C 441.6 441.1, 380.2 441.1, 415.2 441.1" fill="none" stroke="#64748B" stroke-width="2.5"  marker-end="url(#arrow)" opacity="0.9"/><path d="M 579.2 441.1 C 614.2 441.1, 538.5 441.1, 573.5 441.1" fill="none" stroke="#64748B" stroke-width="2.5"  marker-end="url(#arrow)" opacity="0.9"/><path d="M 737.5 441.1 C 772.5 441.1, 696.7 441.1, 731.7 441.1" fill="none" stroke="#64748B" stroke-width="2.5"  marker-end="url(#arrow)" opacity="0.9"/><path d="M 895.7 441.1 C 930.7 441.1, 854.9 441.1, 889.9 441.1" fill="none" stroke="#64748B" stroke-width="2.5"  marker-end="url(#arrow)" opacity="0.9"/><path d="M 1053.9 441.1 C 1088.9 441.1, 1013.2 441.1, 1048.2 441.1" fill="none" stroke="#64748B" stroke-width="2.5"  marker-end="url(#arrow)" opacity="0.9"/><path d="M 1212.2 441.1 C 1247.2 441.1, 1185.8 216.0, 1220.8 216.0" fill="none" stroke="#64748B" stroke-width="2.5"  marker-end="url(#arrow)" opacity="0.9"/><path d="M 1212.2 449.1 C 1247.2 449.1, 1185.8 441.1, 1220.8 441.1" fill="none" stroke="#FB7185" stroke-width="2.5" stroke-dasharray="7 5" marker-end="url(#arrow)" opacity="0.9"/><path d="M 1212.2 457.1 C 1302.8 457.1, 1302.8 634.0, 1393.4 634.0" fill="none" stroke="#FB7185" stroke-width="2.5" stroke-dasharray="7 5" marker-end="url(#arrow)" opacity="0.9"/><path d="M 1384.8 216.0 C 1419.8 216.0, 1358.4 312.5, 1393.4 312.5" fill="none" stroke="#64748B" stroke-width="2.5"  marker-end="url(#arrow)" opacity="0.9"/><path d="M 1384.8 224.0 C 1419.8 224.0, 1358.4 634.0, 1393.4 634.0" fill="none" stroke="#FB7185" stroke-width="2.5" stroke-dasharray="7 5" marker-end="url(#arrow)" opacity="0.9"/><path d="M 1384.8 441.1 C 1419.8 441.1, 1358.4 312.5, 1393.4 312.5" fill="none" stroke="#64748B" stroke-width="2.5"  marker-end="url(#arrow)" opacity="0.9"/><path d="M 1384.8 449.1 C 1419.8 449.1, 1358.4 634.0, 1393.4 634.0" fill="none" stroke="#FB7185" stroke-width="2.5" stroke-dasharray="7 5" marker-end="url(#arrow)" opacity="0.9"/><path d="M 1557.4 634.0 C 1592.4 634.0, 1531.0 634.0, 1566.0 634.0" fill="none" stroke="#64748B" stroke-width="2.5"  marker-end="url(#arrow)" opacity="0.9"/><g transform="translate(70.0 239.3)">
+      <rect x="0" y="0" width="164" height="82" rx="13" fill="#111A2E" stroke="#8B5CF6" stroke-width="2"/>
+      <rect x="0" y="0" width="7" height="82" rx="4" fill="#8B5CF6"/>
+      <text x="19" y="21" font-size="11" font-weight="700" fill="#8B5CF6" letter-spacing="1.2">SCHEDULE</text>
+      <text x="19" y="46" font-size="13" font-weight="600" fill="#F8FAFC">Every Minute</text>
+    </g><g transform="translate(70.0 560.8)">
+      <rect x="0" y="0" width="164" height="82" rx="13" fill="#111A2E" stroke="#8B5CF6" stroke-width="2"/>
+      <rect x="0" y="0" width="7" height="82" rx="4" fill="#8B5CF6"/>
+      <text x="19" y="21" font-size="11" font-weight="700" fill="#8B5CF6" letter-spacing="1.2">MANUAL</text>
+      <text x="19" y="46" font-size="13" font-weight="600" fill="#F8FAFC">Run Dispatcher</text><text x="19" y="64" font-size="13" font-weight="600" fill="#F8FAFC">Manually</text>
+    </g><g transform="translate(242.6 400.1)">
+      <rect x="0" y="0" width="164" height="82" rx="13" fill="#111A2E" stroke="#64748B" stroke-width="2"/>
+      <rect x="0" y="0" width="7" height="82" rx="4" fill="#64748B"/>
+      <text x="19" y="21" font-size="11" font-weight="700" fill="#64748B" letter-spacing="1.2">SET</text>
+      <text x="19" y="46" font-size="13" font-weight="600" fill="#F8FAFC">Worker Identity</text>
+    </g><g transform="translate(415.2 400.1)">
+      <rect x="0" y="0" width="164" height="82" rx="13" fill="#111A2E" stroke="#14B8A6" stroke-width="2"/>
+      <rect x="0" y="0" width="7" height="82" rx="4" fill="#14B8A6"/>
+      <text x="19" y="21" font-size="11" font-weight="700" fill="#14B8A6" letter-spacing="1.2">POSTGRES</text>
+      <text x="19" y="46" font-size="13" font-weight="600" fill="#F8FAFC">Claim Outbox</text>
+    </g><g transform="translate(573.5 400.1)">
+      <rect x="0" y="0" width="164" height="82" rx="13" fill="#111A2E" stroke="#14B8A6" stroke-width="2"/>
+      <rect x="0" y="0" width="7" height="82" rx="4" fill="#14B8A6"/>
+      <text x="19" y="21" font-size="11" font-weight="700" fill="#14B8A6" letter-spacing="1.2">POSTGRES</text>
+      <text x="19" y="46" font-size="13" font-weight="600" fill="#F8FAFC">Authorize Claimed</text><text x="19" y="64" font-size="13" font-weight="600" fill="#F8FAFC">Delivery</text>
+    </g><g transform="translate(731.7 400.1)">
+      <rect x="0" y="0" width="164" height="82" rx="13" fill="#111A2E" stroke="#3B82F6" stroke-width="2"/>
+      <rect x="0" y="0" width="7" height="82" rx="4" fill="#3B82F6"/>
+      <text x="19" y="21" font-size="11" font-weight="700" fill="#3B82F6" letter-spacing="1.2">CODE</text>
+      <text x="19" y="46" font-size="13" font-weight="600" fill="#F8FAFC">Restore Claimed</text><text x="19" y="64" font-size="13" font-weight="600" fill="#F8FAFC">Delivery</text>
+    </g><g transform="translate(889.9 400.1)">
+      <rect x="0" y="0" width="164" height="82" rx="13" fill="#111A2E" stroke="#F59E0B" stroke-width="2"/>
+      <rect x="0" y="0" width="7" height="82" rx="4" fill="#F59E0B"/>
+      <text x="19" y="21" font-size="11" font-weight="700" fill="#F59E0B" letter-spacing="1.2">IF</text>
+      <text x="19" y="46" font-size="13" font-weight="600" fill="#F8FAFC">Delivery Still</text><text x="19" y="64" font-size="13" font-weight="600" fill="#F8FAFC">Current?</text>
+    </g><g transform="translate(1048.2 400.1)">
+      <rect x="0" y="0" width="164" height="82" rx="13" fill="#111A2E" stroke="#F59E0B" stroke-width="2"/>
+      <rect x="0" y="0" width="7" height="82" rx="4" fill="#F59E0B"/>
+      <text x="19" y="21" font-size="11" font-weight="700" fill="#F59E0B" letter-spacing="1.2">SWITCH</text>
+      <text x="19" y="46" font-size="13" font-weight="600" fill="#F8FAFC">Route Delivery</text><text x="19" y="64" font-size="13" font-weight="600" fill="#F8FAFC">Channel</text>
+    </g><g transform="translate(1220.8 175.0)">
+      <rect x="0" y="0" width="164" height="82" rx="13" fill="#111A2E" stroke="#06B6D4" stroke-width="2"/>
+      <rect x="0" y="0" width="7" height="82" rx="4" fill="#06B6D4"/>
+      <text x="19" y="21" font-size="11" font-weight="700" fill="#06B6D4" letter-spacing="1.2">SMTP</text>
+      <text x="19" y="46" font-size="13" font-weight="600" fill="#F8FAFC">Send via SMTP</text>
+    </g><g transform="translate(1220.8 400.1)">
+      <rect x="0" y="0" width="164" height="82" rx="13" fill="#111A2E" stroke="#10B981" stroke-width="2"/>
+      <rect x="0" y="0" width="7" height="82" rx="4" fill="#10B981"/>
+      <text x="19" y="21" font-size="11" font-weight="700" fill="#10B981" letter-spacing="1.2">HTTP</text>
+      <text x="19" y="46" font-size="13" font-weight="600" fill="#F8FAFC">Send via ntfy</text>
+    </g><g transform="translate(1393.4 271.5)">
+      <rect x="0" y="0" width="164" height="82" rx="13" fill="#111A2E" stroke="#14B8A6" stroke-width="2"/>
+      <rect x="0" y="0" width="7" height="82" rx="4" fill="#14B8A6"/>
+      <text x="19" y="21" font-size="11" font-weight="700" fill="#14B8A6" letter-spacing="1.2">POSTGRES</text>
+      <text x="19" y="46" font-size="13" font-weight="600" fill="#F8FAFC">Complete Delivery</text>
+    </g><g transform="translate(1393.4 593.0)">
+      <rect x="0" y="0" width="164" height="82" rx="13" fill="#111A2E" stroke="#3B82F6" stroke-width="2"/>
+      <rect x="0" y="0" width="7" height="82" rx="4" fill="#3B82F6"/>
+      <text x="19" y="21" font-size="11" font-weight="700" fill="#3B82F6" letter-spacing="1.2">CODE</text>
+      <text x="19" y="46" font-size="13" font-weight="600" fill="#F8FAFC">Prepare Delivery</text><text x="19" y="64" font-size="13" font-weight="600" fill="#F8FAFC">Failure</text>
+    </g><g transform="translate(1566.0 593.0)">
+      <rect x="0" y="0" width="164" height="82" rx="13" fill="#111A2E" stroke="#14B8A6" stroke-width="2"/>
+      <rect x="0" y="0" width="7" height="82" rx="4" fill="#14B8A6"/>
+      <text x="19" y="21" font-size="11" font-weight="700" fill="#14B8A6" letter-spacing="1.2">POSTGRES</text>
+      <text x="19" y="46" font-size="13" font-weight="600" fill="#F8FAFC">Defer or Dead-Letter</text>
+    </g></g>
+  <g font-family="DejaVu Sans, sans-serif" transform="translate(70 720)">
+    <circle cx="6" cy="-5" r="5" fill="#64748B"/><text x="19" y="0" font-size="13" fill="#94A3B8">normal path</text>
+    <line x1="140" y1="-5" x2="178" y2="-5" stroke="#FB7185" stroke-width="2.5" stroke-dasharray="7 5"/><text x="190" y="0" font-size="13" fill="#94A3B8">validation / error path</text>
+    <text x="1460" y="0" font-size="13" fill="#64748B">Generated from importable n8n JSON</text>
+  </g>
+</svg>

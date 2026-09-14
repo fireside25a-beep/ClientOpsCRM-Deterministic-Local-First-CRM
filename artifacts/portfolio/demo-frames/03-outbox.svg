@@ -1,0 +1,27 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1600" height="700" viewBox="0 0 1600 700">
+    <defs><pattern id="grid" width="32" height="32" patternUnits="userSpaceOnUse"><path d="M32 0L0 0 0 32" fill="none" stroke="#1E293B"/></pattern></defs>
+    <rect width="1600" height="700" fill="#080D18"/><rect width="1600" height="700" fill="url(#grid)" opacity="0.65"/>
+    <g font-family="DejaVu Sans, sans-serif">
+      <text x="85" y="78" font-size="18" font-weight="700" letter-spacing="2" fill="#14B8A6">CLIENTOPS RELAY · LIVE CONTRACT DEMO</text>
+      <text x="85" y="135" font-size="38" font-weight="700" fill="#F8FAFC">The request and both deliveries commit atomically</text>
+      <text x="85" y="177" font-size="17" fill="#94A3B8">Real C policy output + real PostgreSQL functions; no model or delivery mocks</text>
+      <g transform="translate(85 230)">
+      <rect width="440" height="330" rx="20" fill="#111A2E" stroke="#334155" stroke-width="1.5"/>
+      <circle cx="42" cy="45" r="19" fill="#334155"/><text x="42" y="51" text-anchor="middle" font-size="17" font-weight="700" fill="#fff">1</text>
+      <text x="75" y="51" font-size="20" font-weight="700" fill="#F8FAFC">Webhook request</text>
+      <text x="35" y="105" font-size="17" fill="#CBD5E1">Idempotency-Key present</text><text x="35" y="142" font-size="17" fill="#CBD5E1">Consent: true</text><text x="35" y="179" font-size="17" fill="#CBD5E1">Critical account issue</text><text x="35" y="216" font-size="17" fill="#CBD5E1">No location required</text>
+    </g><g transform="translate(585 230)">
+      <rect width="440" height="330" rx="20" fill="#111A2E" stroke="#334155" stroke-width="1.5"/>
+      <circle cx="42" cy="45" r="19" fill="#334155"/><text x="42" y="51" text-anchor="middle" font-size="17" font-weight="700" fill="#fff">2</text>
+      <text x="75" y="51" font-size="20" font-weight="700" fill="#F8FAFC">Policy decision</text>
+      <text x="35" y="105" font-size="17" fill="#CBD5E1">Route: URGENT</text><text x="35" y="142" font-size="17" fill="#CBD5E1">Category: support</text><text x="35" y="179" font-size="17" fill="#CBD5E1">Score: 85 · Serviceable: yes</text><text x="35" y="216" font-size="17" fill="#86EFAC">✓ 100 identical reruns</text>
+    </g><g transform="translate(1085 230)">
+      <rect width="440" height="330" rx="20" fill="#111A2E" stroke="#14B8A6" stroke-width="3"/>
+      <circle cx="42" cy="45" r="19" fill="#14B8A6"/><text x="42" y="51" text-anchor="middle" font-size="17" font-weight="700" fill="#fff">3</text>
+      <text x="75" y="51" font-size="20" font-weight="700" fill="#F8FAFC">Durable result</text>
+      <text x="35" y="105" font-size="17" fill="#CBD5E1">201 created · valid UUID</text><text x="35" y="142" font-size="17" fill="#CBD5E1">customer_ack → smtp</text><text x="35" y="179" font-size="17" fill="#CBD5E1">owner_alert → ntfy</text><text x="35" y="216" font-size="17" fill="#86EFAC">✓ replay 200 · conflict 409</text>
+    </g>
+      <text x="85" y="635" font-size="16" fill="#94A3B8">Replay returns the original ticket; changed data with the same key is rejected.</text>
+      <text x="1400" y="635" font-size="15" fill="#64748B">clientops-relay</text>
+    </g>
+  </svg>

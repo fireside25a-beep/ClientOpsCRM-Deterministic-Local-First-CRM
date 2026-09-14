@@ -1,0 +1,11 @@
+{
+  "leadId": "companion-probe-0001",
+  "channel": "webhook",
+  "name": "Jordan Lee",
+  "city": "",
+  "phone": "",
+  "email": "jordan@example.test",
+  "source": "companion-probe",
+  "message": "Our account has a critical issue and we need support today.",
+  "consent": true
+}

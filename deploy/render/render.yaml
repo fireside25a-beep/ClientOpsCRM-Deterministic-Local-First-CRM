@@ -1,0 +1,13 @@
+services:
+  - type: web
+    name: clientops-relay-companion
+    runtime: docker
+    plan: starter
+    dockerfilePath: ./companion/Dockerfile
+    dockerContext: .
+    healthCheckPath: /readyz
+    autoDeployTrigger: checksPass
+    maxShutdownDelaySeconds: 30
+    envVars:
+      - key: CLIENTOPS_COMPANION_API_KEY
+        sync: false

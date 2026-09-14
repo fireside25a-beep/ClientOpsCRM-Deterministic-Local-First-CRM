@@ -1,0 +1,98 @@
+{
+  "id": "clr_digest_00001",
+  "name": "ClientOps Relay — Daily Digest",
+  "active": false,
+  "nodes": [
+    {
+      "id": "clr_digest_00001-schedule",
+      "name": "Daily at 17:00",
+      "type": "n8n-nodes-base.scheduleTrigger",
+      "typeVersion": 1.3,
+      "position": [
+        0,
+        80
+      ],
+      "parameters": {
+        "rule": {
+          "interval": [
+            {
+              "field": "cronExpression",
+              "expression": "0 17 * * *"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "clr_digest_00001-manual",
+      "name": "Run Digest Manually",
+      "type": "n8n-nodes-base.manualTrigger",
+      "typeVersion": 1,
+      "position": [
+        0,
+        280
+      ],
+      "parameters": {}
+    },
+    {
+      "id": "clr_digest_00001-query",
+      "name": "Queue Daily Digest",
+      "type": "n8n-nodes-base.postgres",
+      "typeVersion": 2.7,
+      "position": [
+        200,
+        180
+      ],
+      "parameters": {
+        "operation": "executeQuery",
+        "query": "SELECT * FROM clientops.enqueue_daily_digest();",
+        "options": {}
+      },
+      "credentials": {
+        "postgres": {
+          "id": "clientops-postgres",
+          "name": "ClientOps PostgreSQL"
+        }
+      }
+    }
+  ],
+  "connections": {
+    "Daily at 17:00": {
+      "main": [
+        [
+          {
+            "node": "Queue Daily Digest",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Run Digest Manually": {
+      "main": [
+        [
+          {
+            "node": "Queue Daily Digest",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "settings": {
+    "executionOrder": "v1",
+    "errorWorkflow": "clr_errors_00001",
+    "saveDataErrorExecution": "none",
+    "saveDataSuccessExecution": "none",
+    "saveManualExecutions": false,
+    "saveExecutionProgress": false,
+    "executionTimeout": 60,
+    "timezone": "Asia/Nicosia"
+  },
+  "pinData": {},
+  "meta": {
+    "templateCredsSetupCompleted": true
+  },
+  "tags": []
+}

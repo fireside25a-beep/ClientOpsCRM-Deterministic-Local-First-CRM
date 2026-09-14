@@ -1,0 +1,67 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1800" height="760" viewBox="0 0 1800 760">
+  <defs>
+    <pattern id="grid" width="32" height="32" patternUnits="userSpaceOnUse"><path d="M 32 0 L 0 0 0 32" fill="none" stroke="#1E293B" stroke-width="1"/></pattern>
+    <marker id="arrow" markerWidth="8" markerHeight="8" refX="7" refY="4" orient="auto"><path d="M0,0 L8,4 L0,8 z" fill="#94A3B8"/></marker>
+    <filter id="shadow"><feDropShadow dx="0" dy="10" stdDeviation="12" flood-opacity="0.25"/></filter>
+  </defs>
+  <rect width="1800" height="760" fill="#080D18"/>
+  <rect width="1800" height="760" fill="url(#grid)" opacity="0.7"/>
+  <text x="70" y="72" font-family="DejaVu Sans, sans-serif" font-size="35" font-weight="700" fill="#F8FAFC">ClientOps Relay — API Request Intake</text>
+  <text x="70" y="112" font-family="DejaVu Sans, sans-serif" font-size="17" fill="#94A3B8">Strict request validation → deterministic C policy → atomic PostgreSQL outbox → safe public response</text>
+  <g font-family="DejaVu Sans, sans-serif" filter="url(#shadow)"><path d="M 234.0 477.3 C 269.0 477.3, 222.0 477.3, 257.0 477.3" fill="none" stroke="#64748B" stroke-width="2.5"  marker-end="url(#arrow)" opacity="0.9"/><path d="M 421.0 477.3 C 456.0 477.3, 409.0 477.3, 444.0 477.3" fill="none" stroke="#64748B" stroke-width="2.5"  marker-end="url(#arrow)" opacity="0.9"/><path d="M 608.0 477.3 C 643.0 477.3, 596.0 320.5, 631.0 320.5" fill="none" stroke="#64748B" stroke-width="2.5"  marker-end="url(#arrow)" opacity="0.9"/><path d="M 608.0 485.3 C 1087.0 485.3, 1087.0 477.3, 1566.0 477.3" fill="none" stroke="#FB7185" stroke-width="2.5" stroke-dasharray="7 5" marker-end="url(#arrow)" opacity="0.9"/><path d="M 795.0 320.5 C 830.0 320.5, 783.0 320.5, 818.0 320.5" fill="none" stroke="#64748B" stroke-width="2.5"  marker-end="url(#arrow)" opacity="0.9"/><path d="M 795.0 328.5 C 993.5 328.5, 993.5 634.0, 1192.0 634.0" fill="none" stroke="#FB7185" stroke-width="2.5" stroke-dasharray="7 5" marker-end="url(#arrow)" opacity="0.9"/><path d="M 982.0 320.5 C 1017.0 320.5, 970.0 320.5, 1005.0 320.5" fill="none" stroke="#64748B" stroke-width="2.5"  marker-end="url(#arrow)" opacity="0.9"/><path d="M 1169.0 320.5 C 1204.0 320.5, 1157.0 216.0, 1192.0 216.0" fill="none" stroke="#64748B" stroke-width="2.5"  marker-end="url(#arrow)" opacity="0.9"/><path d="M 1169.0 328.5 C 1367.5 328.5, 1367.5 477.3, 1566.0 477.3" fill="none" stroke="#FB7185" stroke-width="2.5" stroke-dasharray="7 5" marker-end="url(#arrow)" opacity="0.9"/><path d="M 1356.0 216.0 C 1391.0 216.0, 1344.0 216.0, 1379.0 216.0" fill="none" stroke="#64748B" stroke-width="2.5"  marker-end="url(#arrow)" opacity="0.9"/><path d="M 1356.0 224.0 C 1391.0 224.0, 1157.0 634.0, 1192.0 634.0" fill="none" stroke="#FB7185" stroke-width="2.5" stroke-dasharray="7 5" marker-end="url(#arrow)" opacity="0.9"/><path d="M 1543.0 216.0 C 1578.0 216.0, 1531.0 477.3, 1566.0 477.3" fill="none" stroke="#64748B" stroke-width="2.5"  marker-end="url(#arrow)" opacity="0.9"/><path d="M 1356.0 634.0 C 1461.0 634.0, 1461.0 477.3, 1566.0 477.3" fill="none" stroke="#64748B" stroke-width="2.5"  marker-end="url(#arrow)" opacity="0.9"/><g transform="translate(70.0 436.3)">
+      <rect x="0" y="0" width="164" height="82" rx="13" fill="#111A2E" stroke="#8B5CF6" stroke-width="2"/>
+      <rect x="0" y="0" width="7" height="82" rx="4" fill="#8B5CF6"/>
+      <text x="19" y="21" font-size="11" font-weight="700" fill="#8B5CF6" letter-spacing="1.2">WEBHOOK</text>
+      <text x="19" y="46" font-size="13" font-weight="600" fill="#F8FAFC">Request Webhook</text>
+    </g><g transform="translate(257.0 436.3)">
+      <rect x="0" y="0" width="164" height="82" rx="13" fill="#111A2E" stroke="#3B82F6" stroke-width="2"/>
+      <rect x="0" y="0" width="7" height="82" rx="4" fill="#3B82F6"/>
+      <text x="19" y="21" font-size="11" font-weight="700" fill="#3B82F6" letter-spacing="1.2">CODE</text>
+      <text x="19" y="46" font-size="13" font-weight="600" fill="#F8FAFC">Validate Request</text>
+    </g><g transform="translate(444.0 436.3)">
+      <rect x="0" y="0" width="164" height="82" rx="13" fill="#111A2E" stroke="#F59E0B" stroke-width="2"/>
+      <rect x="0" y="0" width="7" height="82" rx="4" fill="#F59E0B"/>
+      <text x="19" y="21" font-size="11" font-weight="700" fill="#F59E0B" letter-spacing="1.2">IF</text>
+      <text x="19" y="46" font-size="13" font-weight="600" fill="#F8FAFC">Request Valid?</text>
+    </g><g transform="translate(631.0 279.5)">
+      <rect x="0" y="0" width="164" height="82" rx="13" fill="#111A2E" stroke="#10B981" stroke-width="2"/>
+      <rect x="0" y="0" width="7" height="82" rx="4" fill="#10B981"/>
+      <text x="19" y="21" font-size="11" font-weight="700" fill="#10B981" letter-spacing="1.2">HTTP</text>
+      <text x="19" y="46" font-size="13" font-weight="600" fill="#F8FAFC">Qualify</text><text x="19" y="64" font-size="13" font-weight="600" fill="#F8FAFC">Deterministically</text>
+    </g><g transform="translate(818.0 279.5)">
+      <rect x="0" y="0" width="164" height="82" rx="13" fill="#111A2E" stroke="#3B82F6" stroke-width="2"/>
+      <rect x="0" y="0" width="7" height="82" rx="4" fill="#3B82F6"/>
+      <text x="19" y="21" font-size="11" font-weight="700" fill="#3B82F6" letter-spacing="1.2">CODE</text>
+      <text x="19" y="46" font-size="13" font-weight="600" fill="#F8FAFC">Evaluate Policy</text><text x="19" y="64" font-size="13" font-weight="600" fill="#F8FAFC">Response</text>
+    </g><g transform="translate(1005.0 279.5)">
+      <rect x="0" y="0" width="164" height="82" rx="13" fill="#111A2E" stroke="#F59E0B" stroke-width="2"/>
+      <rect x="0" y="0" width="7" height="82" rx="4" fill="#F59E0B"/>
+      <text x="19" y="21" font-size="11" font-weight="700" fill="#F59E0B" letter-spacing="1.2">IF</text>
+      <text x="19" y="46" font-size="13" font-weight="600" fill="#F8FAFC">Policy Accepted?</text>
+    </g><g transform="translate(1192.0 175.0)">
+      <rect x="0" y="0" width="164" height="82" rx="13" fill="#111A2E" stroke="#14B8A6" stroke-width="2"/>
+      <rect x="0" y="0" width="7" height="82" rx="4" fill="#14B8A6"/>
+      <text x="19" y="21" font-size="11" font-weight="700" fill="#14B8A6" letter-spacing="1.2">POSTGRES</text>
+      <text x="19" y="46" font-size="13" font-weight="600" fill="#F8FAFC">Store Request and</text><text x="19" y="64" font-size="13" font-weight="600" fill="#F8FAFC">Outbox</text>
+    </g><g transform="translate(1379.0 175.0)">
+      <rect x="0" y="0" width="164" height="82" rx="13" fill="#111A2E" stroke="#3B82F6" stroke-width="2"/>
+      <rect x="0" y="0" width="7" height="82" rx="4" fill="#3B82F6"/>
+      <text x="19" y="21" font-size="11" font-weight="700" fill="#3B82F6" letter-spacing="1.2">CODE</text>
+      <text x="19" y="46" font-size="13" font-weight="600" fill="#F8FAFC">Build Public</text><text x="19" y="64" font-size="13" font-weight="600" fill="#F8FAFC">Response</text>
+    </g><g transform="translate(1192.0 593.0)">
+      <rect x="0" y="0" width="164" height="82" rx="13" fill="#111A2E" stroke="#3B82F6" stroke-width="2"/>
+      <rect x="0" y="0" width="7" height="82" rx="4" fill="#3B82F6"/>
+      <text x="19" y="21" font-size="11" font-weight="700" fill="#3B82F6" letter-spacing="1.2">CODE</text>
+      <text x="19" y="46" font-size="13" font-weight="600" fill="#F8FAFC">Build Unavailable</text><text x="19" y="64" font-size="13" font-weight="600" fill="#F8FAFC">Response</text>
+    </g><g transform="translate(1566.0 436.3)">
+      <rect x="0" y="0" width="164" height="82" rx="13" fill="#111A2E" stroke="#EC4899" stroke-width="2"/>
+      <rect x="0" y="0" width="7" height="82" rx="4" fill="#EC4899"/>
+      <text x="19" y="21" font-size="11" font-weight="700" fill="#EC4899" letter-spacing="1.2">RESPONSE</text>
+      <text x="19" y="46" font-size="13" font-weight="600" fill="#F8FAFC">Respond to Client</text>
+    </g></g>
+  <g font-family="DejaVu Sans, sans-serif" transform="translate(70 720)">
+    <circle cx="6" cy="-5" r="5" fill="#64748B"/><text x="19" y="0" font-size="13" fill="#94A3B8">normal path</text>
+    <line x1="140" y1="-5" x2="178" y2="-5" stroke="#FB7185" stroke-width="2.5" stroke-dasharray="7 5"/><text x="190" y="0" font-size="13" fill="#94A3B8">validation / error path</text>
+    <text x="1460" y="0" font-size="13" fill="#64748B">Generated from importable n8n JSON</text>
+  </g>
+</svg>

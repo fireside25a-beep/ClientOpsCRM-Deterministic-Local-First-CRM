@@ -1,0 +1,42 @@
+{
+  "formatVersion": 1,
+  "normalization": "clientops-relay-workflow-semantics-v1",
+  "source": "Untouched ClientOps Relay v1.0 workflows exported by n8n 2.33.7",
+  "workflows": {
+    "clr_errors_00001": {
+      "name": "ClientOps Relay — Error Sink",
+      "nodeCount": 3,
+      "sha256": "3a0c53c27ae0d7d0deb1d4e52c8e644c183d2a6c327ad93268be42937d11acd4"
+    },
+    "clr_intake_00001": {
+      "name": "ClientOps Relay — API Lead Intake",
+      "nodeCount": 10,
+      "sha256": "6e70e1331109859b5a6e20475cf352be519d014e0247cd495bb5acae2554e227"
+    },
+    "clr_outbox_00001": {
+      "name": "ClientOps Relay — Outbox Dispatcher",
+      "nodeCount": 13,
+      "sha256": "3aef1d546d5abb9f90f607c456b561d060a9c6f940e72720c14d473ff1bbf71f"
+    },
+    "clr_sla_mon_0001": {
+      "name": "ClientOps Relay — SLA Monitor",
+      "nodeCount": 3,
+      "sha256": "516fa3a81a962c725c347bb950f89268606659469af58099f68da777b143f822"
+    },
+    "clr_digest_00001": {
+      "name": "ClientOps Relay — Daily Digest",
+      "nodeCount": 3,
+      "sha256": "f1d6d7d979e7eb25d4181dde82532109063078cbd6827dcd7d833cb12db8d9c5"
+    },
+    "clr_contact_0001": {
+      "name": "ClientOps Relay — Mark Contacted",
+      "nodeCount": 7,
+      "sha256": "e1e8b87cb9979039a6c0af718af86a5ee796f9bc01c4dc6523a3f37d1cc58efd"
+    },
+    "clr_retention_001": {
+      "name": "ClientOps Relay — Retention Maintenance",
+      "nodeCount": 3,
+      "sha256": "6dde0f8f1765d3f5777a5d7921190741ef98d8bcd5b7ccd2f2258e1f40bd6532"
+    }
+  }
+}

@@ -1,0 +1,538 @@
+{
+  "id": "clr_outbox_00001",
+  "name": "ClientOps Relay — Outbox Dispatcher",
+  "active": false,
+  "nodes": [
+    {
+      "id": "outbox-schedule",
+      "name": "Every Minute",
+      "type": "n8n-nodes-base.scheduleTrigger",
+      "typeVersion": 1.3,
+      "position": [
+        0,
+        80
+      ],
+      "parameters": {
+        "rule": {
+          "interval": [
+            {
+              "field": "minutes",
+              "minutesInterval": 1
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "outbox-manual",
+      "name": "Run Dispatcher Manually",
+      "type": "n8n-nodes-base.manualTrigger",
+      "typeVersion": 1,
+      "position": [
+        0,
+        280
+      ],
+      "parameters": {}
+    },
+    {
+      "id": "outbox-worker",
+      "name": "Worker Identity",
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.5,
+      "position": [
+        240,
+        180
+      ],
+      "parameters": {
+        "mode": "manual",
+        "assignments": {
+          "assignments": [
+            {
+              "id": "outbox-worker-id",
+              "name": "workerId",
+              "value": "={{ 'outbox-' + $execution.id }}",
+              "type": "string"
+            },
+            {
+              "id": "outbox-batch-limit",
+              "name": "limit",
+              "value": 20,
+              "type": "number"
+            }
+          ]
+        },
+        "includeOtherFields": false,
+        "options": {}
+      }
+    },
+    {
+      "id": "outbox-claim",
+      "name": "Claim Outbox",
+      "type": "n8n-nodes-base.postgres",
+      "typeVersion": 2.7,
+      "position": [
+        480,
+        180
+      ],
+      "parameters": {
+        "operation": "executeQuery",
+        "query": "SELECT * FROM clientops.claim_outbox($1, $2);",
+        "options": {
+          "queryReplacement": "={{ [ $json.workerId, $json.limit ] }}"
+        }
+      },
+      "credentials": {
+        "postgres": {
+          "id": "clientops-postgres",
+          "name": "ClientOps PostgreSQL"
+        }
+      }
+    },
+    {
+      "id": "outbox-authorize",
+      "name": "Authorize Claimed Delivery",
+      "type": "n8n-nodes-base.postgres",
+      "typeVersion": 2.7,
+      "position": [
+        700,
+        180
+      ],
+      "parameters": {
+        "operation": "executeQuery",
+        "query": "SELECT * FROM clientops.authorize_delivery($1::uuid, $2::uuid);",
+        "options": {
+          "queryReplacement": "={{ [ $json.outbox_id, $json.lease_token ] }}"
+        }
+      },
+      "credentials": {
+        "postgres": {
+          "id": "clientops-postgres",
+          "name": "ClientOps PostgreSQL"
+        }
+      }
+    },
+    {
+      "id": "outbox-restore-claim",
+      "name": "Restore Claimed Delivery",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        920,
+        180
+      ],
+      "parameters": {
+        "mode": "runOnceForAllItems",
+        "language": "javaScript",
+        "jsCode": "return $input.all().map((item) => ({\n  json: { ...$('Claim Outbox').item.json, ...item.json },\n  pairedItem: item.pairedItem,\n}));"
+      }
+    },
+    {
+      "id": "outbox-current",
+      "name": "Delivery Still Current?",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.3,
+      "position": [
+        1140,
+        180
+      ],
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 3
+          },
+          "conditions": [
+            {
+              "id": "outbox-current-condition",
+              "leftValue": "={{ $json.allowed }}",
+              "rightValue": "",
+              "operator": {
+                "type": "boolean",
+                "operation": "true",
+                "singleValue": true
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      }
+    },
+    {
+      "id": "outbox-switch",
+      "name": "Route Delivery Channel",
+      "type": "n8n-nodes-base.switch",
+      "typeVersion": 3.4,
+      "position": [
+        1360,
+        180
+      ],
+      "parameters": {
+        "mode": "rules",
+        "rules": {
+          "values": [
+            {
+              "outputKey": "smtp",
+              "renameOutput": true,
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 3
+                },
+                "conditions": [
+                  {
+                    "id": "outbox-smtp-condition",
+                    "leftValue": "={{ $json.channel }}",
+                    "rightValue": "smtp",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              }
+            },
+            {
+              "outputKey": "ntfy",
+              "renameOutput": true,
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 3
+                },
+                "conditions": [
+                  {
+                    "id": "outbox-ntfy-condition",
+                    "leftValue": "={{ $json.channel }}",
+                    "rightValue": "ntfy",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              }
+            }
+          ]
+        },
+        "options": {
+          "fallbackOutput": "extra",
+          "renameFallbackOutput": "unsupported"
+        }
+      }
+    },
+    {
+      "id": "outbox-email",
+      "name": "Send via SMTP",
+      "type": "n8n-nodes-base.emailSend",
+      "typeVersion": 2.1,
+      "position": [
+        1600,
+        40
+      ],
+      "parameters": {
+        "fromEmail": "ClientOps Relay <no-reply@clientops.local>",
+        "toEmail": "={{ $json.recipient }}",
+        "subject": "={{ $json.subject }}",
+        "emailFormat": "text",
+        "text": "={{ $json.body }}",
+        "options": {
+          "appendAttribution": false
+        }
+      },
+      "credentials": {
+        "smtp": {
+          "id": "clientops-smtp",
+          "name": "ClientOps SMTP"
+        }
+      },
+      "retryOnFail": true,
+      "maxTries": 3,
+      "waitBetweenTries": 1000,
+      "onError": "continueErrorOutput"
+    },
+    {
+      "id": "outbox-ntfy",
+      "name": "Send via ntfy",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.5,
+      "position": [
+        1600,
+        180
+      ],
+      "parameters": {
+        "method": "POST",
+        "url": "={{ 'http://ntfy:80/' + encodeURIComponent($json.recipient) }}",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Title",
+              "value": "={{ $json.subject }}"
+            },
+            {
+              "name": "Priority",
+              "value": "={{ $json.priority === 'high' ? '5' : $json.priority === 'low' ? '2' : '3' }}"
+            },
+            {
+              "name": "Tags",
+              "value": "briefcase,inbox_tray"
+            }
+          ]
+        },
+        "sendBody": true,
+        "contentType": "raw",
+        "rawContentType": "text/plain",
+        "body": "={{ $json.body }}",
+        "options": {
+          "timeout": 10000,
+          "response": {
+            "response": {
+              "neverError": false,
+              "responseFormat": "json"
+            }
+          }
+        }
+      },
+      "retryOnFail": true,
+      "maxTries": 3,
+      "waitBetweenTries": 1000,
+      "onError": "continueErrorOutput"
+    },
+    {
+      "id": "outbox-complete",
+      "name": "Complete Delivery",
+      "type": "n8n-nodes-base.postgres",
+      "typeVersion": 2.7,
+      "position": [
+        1840,
+        100
+      ],
+      "parameters": {
+        "operation": "executeQuery",
+        "query": "SELECT * FROM clientops.complete_outbox($1::uuid, $2, $3::uuid, $4);",
+        "options": {
+          "queryReplacement": "={{ [ $('Claim Outbox').item.json.outbox_id, $('Claim Outbox').item.json.lease_owner, $('Claim Outbox').item.json.lease_token, String($json.messageId ?? $json.id ?? '') ] }}"
+        }
+      },
+      "credentials": {
+        "postgres": {
+          "id": "clientops-postgres",
+          "name": "ClientOps PostgreSQL"
+        }
+      }
+    },
+    {
+      "id": "outbox-prepare-failure",
+      "name": "Prepare Delivery Failure",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        1840,
+        300
+      ],
+      "parameters": {
+        "mode": "runOnceForAllItems",
+        "language": "javaScript",
+        "jsCode": "return $input.all().map((item) => {\n  const claim = $('Claim Outbox').item.json;\n  const raw = item.json?.error?.message ?? item.json?.message ?? item.json?.error ?? 'unsupported delivery channel';\n  return { json: {\n    outboxId: claim.outbox_id,\n    worker: claim.lease_owner,\n    leaseToken: claim.lease_token,\n    error: String(raw).slice(0, 1800),\n  }, pairedItem: item.pairedItem };\n});"
+      }
+    },
+    {
+      "id": "outbox-fail",
+      "name": "Defer or Dead-Letter",
+      "type": "n8n-nodes-base.postgres",
+      "typeVersion": 2.7,
+      "position": [
+        2080,
+        300
+      ],
+      "parameters": {
+        "operation": "executeQuery",
+        "query": "SELECT * FROM clientops.fail_outbox($1::uuid, $2, $3::uuid, $4);",
+        "options": {
+          "queryReplacement": "={{ [ $json.outboxId, $json.worker, $json.leaseToken, $json.error ] }}"
+        }
+      },
+      "credentials": {
+        "postgres": {
+          "id": "clientops-postgres",
+          "name": "ClientOps PostgreSQL"
+        }
+      }
+    }
+  ],
+  "connections": {
+    "Every Minute": {
+      "main": [
+        [
+          {
+            "node": "Worker Identity",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Run Dispatcher Manually": {
+      "main": [
+        [
+          {
+            "node": "Worker Identity",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Worker Identity": {
+      "main": [
+        [
+          {
+            "node": "Claim Outbox",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Claim Outbox": {
+      "main": [
+        [
+          {
+            "node": "Authorize Claimed Delivery",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Authorize Claimed Delivery": {
+      "main": [
+        [
+          {
+            "node": "Restore Claimed Delivery",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Restore Claimed Delivery": {
+      "main": [
+        [
+          {
+            "node": "Delivery Still Current?",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Delivery Still Current?": {
+      "main": [
+        [
+          {
+            "node": "Route Delivery Channel",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        []
+      ]
+    },
+    "Route Delivery Channel": {
+      "main": [
+        [
+          {
+            "node": "Send via SMTP",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Send via ntfy",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Prepare Delivery Failure",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Send via SMTP": {
+      "main": [
+        [
+          {
+            "node": "Complete Delivery",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Prepare Delivery Failure",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Send via ntfy": {
+      "main": [
+        [
+          {
+            "node": "Complete Delivery",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Prepare Delivery Failure",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Prepare Delivery Failure": {
+      "main": [
+        [
+          {
+            "node": "Defer or Dead-Letter",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "settings": {
+    "executionOrder": "v1",
+    "errorWorkflow": "clr_errors_00001",
+    "saveDataErrorExecution": "none",
+    "saveDataSuccessExecution": "none",
+    "saveManualExecutions": false,
+    "saveExecutionProgress": false,
+    "executionTimeout": 120
+  },
+  "pinData": {},
+  "meta": {
+    "templateCredsSetupCompleted": true
+  },
+  "tags": []
+}

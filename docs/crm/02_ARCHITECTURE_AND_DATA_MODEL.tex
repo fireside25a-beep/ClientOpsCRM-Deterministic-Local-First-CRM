@@ -1,0 +1,235 @@
+% Options for packages loaded elsewhere
+\PassOptionsToPackage{unicode}{hyperref}
+\PassOptionsToPackage{hyphens}{url}
+%
+\documentclass[
+]{article}
+\usepackage{amsmath,amssymb}
+\usepackage{iftex}
+\ifPDFTeX
+  \usepackage[T1]{fontenc}
+  \usepackage[utf8]{inputenc}
+  \usepackage{textcomp} % provide euro and other symbols
+\else % if luatex or xetex
+  \usepackage{unicode-math} % this also loads fontspec
+  \defaultfontfeatures{Scale=MatchLowercase}
+  \defaultfontfeatures[\rmfamily]{Ligatures=TeX,Scale=1}
+\fi
+\usepackage{lmodern}
+\ifPDFTeX\else
+  % xetex/luatex font selection
+  \setmainfont[]{DejaVu Sans}
+  \setmonofont[]{DejaVu Sans Mono}
+\fi
+% Use upquote if available, for straight quotes in verbatim environments
+\IfFileExists{upquote.sty}{\usepackage{upquote}}{}
+\IfFileExists{microtype.sty}{% use microtype if available
+  \usepackage[]{microtype}
+  \UseMicrotypeSet[protrusion]{basicmath} % disable protrusion for tt fonts
+}{}
+\makeatletter
+\@ifundefined{KOMAClassName}{% if non-KOMA class
+  \IfFileExists{parskip.sty}{%
+    \usepackage{parskip}
+  }{% else
+    \setlength{\parindent}{0pt}
+    \setlength{\parskip}{6pt plus 2pt minus 1pt}}
+}{% if KOMA class
+  \KOMAoptions{parskip=half}}
+\makeatother
+\usepackage{xcolor}
+\usepackage[margin=24mm]{geometry}
+\setlength{\emergencystretch}{3em} % prevent overfull lines
+\providecommand{\tightlist}{%
+  \setlength{\itemsep}{0pt}\setlength{\parskip}{0pt}}
+\setcounter{secnumdepth}{-\maxdimen} % remove section numbering
+\ifLuaTeX
+  \usepackage{selnolig}  % disable illegal ligatures
+\fi
+\usepackage{bookmark}
+\IfFileExists{xurl.sty}{\usepackage{xurl}}{} % add URL line breaks if available
+\urlstyle{same}
+\hypersetup{
+  hidelinks,
+  pdfcreator={LaTeX via pandoc}}
+
+\author{}
+\date{}
+
+\begin{document}
+
+\section{ClientOpsCRM 2.0.0 Architecture and Data
+Model}\label{clientopscrm-200-architecture-and-data-model}
+
+\subsection{System boundary}\label{system-boundary}
+
+ClientOpsCRM deliberately separates two concerns. ClientOps Relay 1.2.1
+remains the ingress and workflow subsystem: deterministic C11 lead
+policy, PostgreSQL transaction state/outbox, n8n automation,
+authenticated companion boundary, deployment and operational tooling.
+ClientOpsCRM is a compiled C++17 operator-side state machine backed by
+SQLite.
+
+This gives the system two independent persistence domains with an
+explicit bridge instead of making the CRM depend on the automation
+runtime for ordinary local operation.
+
+\subsection{Executable architecture}\label{executable-architecture}
+
+\texttt{clientops} is the top-level launcher. CRM commands invoke
+\texttt{crm/build/clientops-crm}; if the binary is missing or older than
+the source, the launcher builds the release target first. The CRM
+process opens one SQLite application database, enables foreign keys,
+applies the expected schema, installs trigger-enforced invariants,
+records the actor context, and executes one command.
+
+The core implementation is intentionally small enough to audit as one
+translation unit while still separating concerns internally into
+database RAII, prepared statements, validation/normalization,
+schema/invariants, command handlers, rendering, import/export and
+diagnostics.
+
+\subsection{Persistent entities}\label{persistent-entities}
+
+\subsubsection{Accounts}\label{accounts}
+
+Organizations are durable entities with name, normalized domain
+identity, website, industry, location, owner and active/inactive state.
+A non-empty normalized domain is unique.
+
+\subsubsection{Contacts}\label{contacts}
+
+People may be attached to an account. The record retains display
+email/phone and normalized counterparts. A non-empty normalized email is
+unique; normalized phone is indexed for duplicate signaling rather than
+made globally unique because shared switchboards/family/business numbers
+are legitimate.
+
+\subsubsection{Leads}\label{leads}
+
+A lead is pre-opportunity work. It stores Relay identity when available,
+identity/contact fields, source, raw message, valid JSON metadata,
+score, priority, owner and lifecycle state (\texttt{new},
+\texttt{qualified}, \texttt{disqualified}, \texttt{converted}). Relay
+ticket identity is unique when non-empty.
+
+\subsubsection{Pipelines and stages}\label{pipelines-and-stages}
+
+A pipeline owns ordered stages. Each stage has a position, probability
+and kind: \texttt{open}, \texttt{won}, or \texttt{lost}. Each pipeline
+can have at most one won terminal and one lost terminal. The built-in
+\texttt{Default\ Sales} pipeline uses Qualification 20\%, Discovery
+40\%, Proposal 65\%, Negotiation 85\%, Won 100\%, Lost 0\%.
+
+\subsubsection{Deals}\label{deals}
+
+A deal is an opportunity attached to one pipeline/stage and optionally
+to an account, primary contact and source lead. Money is
+\texttt{amount\_minor\ INTEGER}; currency is a three-letter code;
+expected close is a validated calendar date; probability is synchronized
+to the stage; status is \texttt{open}, \texttt{won}, or \texttt{lost}.
+
+Database triggers reject any insert/update where stage.pipeline does not
+equal deal.pipeline or where stage.kind does not equal deal.status. A
+lost deal without a reason is rejected below the command layer as well.
+
+\subsubsection{Tasks, notes and custom
+values}\label{tasks-notes-and-custom-values}
+
+These use a controlled polymorphic reference
+(\texttt{account\textbar{}contact\textbar{}lead\textbar{}deal}, integer
+entity ID). The command layer verifies target existence; \texttt{doctor}
+independently detects orphan polymorphic references. Tasks have explicit
+lifecycle state. Notes are append-oriented context. Custom field keys
+use a restricted identifier grammar and one value per entity/key.
+
+\subsubsection{Activities and audit}\label{activities-and-audit}
+
+Activities form the operator-facing timeline: business events such as
+creation, qualification, conversion, stage moves, completion and
+closure. Audit rows capture inserts/updates/deletes with actor and JSON
+before/after material where applicable. Audit rows have database
+triggers that abort UPDATE and DELETE, making the application audit
+history append-only even if a caller bypasses the CLI and writes SQL
+directly.
+
+\subsection{Transaction model}\label{transaction-model}
+
+Normal SQLite writes are atomic. Multi-record lead conversion explicitly
+starts \texttt{BEGIN\ IMMEDIATE}, resolves/creates account and contact
+state, creates the deal, links the lead, records activity, and commits.
+Any exception causes rollback through the transaction guard. This is
+directly tested by retrying an invalid conversion and comparing
+persistent counts before and after.
+
+\texttt{BEGIN\ IMMEDIATE} also acquires the write reservation at
+transaction start, reducing the chance that a conversion does
+significant read-side work only to fail later when upgrading to a
+writer.
+
+\subsection{Search model}\label{search-model}
+
+\texttt{crm\_fts} is an SQLite FTS5 virtual table. Insert/update/delete
+triggers maintain search material for accounts, contacts, leads, deals
+and notes. Initialization rebuilds the index from authoritative tables
+so \texttt{init} is idempotent with respect to search state. Search
+results return entity type, entity ID and indexed text.
+
+\subsection{Normalization and exact
+arithmetic}\label{normalization-and-exact-arithmetic}
+
+Email identity is lowercased. Account domains are canonicalized by
+removing protocol/common \texttt{www} prefix and path/query material
+before lowercasing. Phones reduce to digits with international
+\texttt{00} prefix normalization for duplicate comparison.
+
+Monetary input is parsed as decimal text and converted to integer minor
+units with at most two fractional digits. No binary floating-point value
+represents stored money. Forecast weighting performs integer arithmetic
+against the stored 0..100 probability.
+
+\subsection{Integrity doctor}\label{integrity-doctor}
+
+\texttt{doctor} checks:
+
+\begin{enumerate}
+\def\labelenumi{\arabic{enumi}.}
+\tightlist
+\item
+  SQLite \texttt{integrity\_check}.
+\item
+  \texttt{foreign\_key\_check}.
+\item
+  exactly one won/lost terminal stage per pipeline.
+\item
+  deal status/pipeline/stage consistency.
+\item
+  converted-lead links.
+\item
+  orphan task/note/custom references.
+\item
+  presence of append-only audit guards.
+\end{enumerate}
+
+It returns failure if any invariant is broken.
+
+\subsection{Relay bridge}\label{relay-bridge}
+
+\texttt{crm/scripts/import-relay.sh} reads the canonical
+\texttt{clientops.leads} table from the live Relay PostgreSQL container
+using PostgreSQL\textquotesingle s own CSV emitter. It maps Relay UUID
+to \texttt{relay\_ticket\_id} and serializes policy/routing provenance
+to JSON. The data is streamed, not staged in an intermediate application
+file. The CRM\textquotesingle s import path validates records and skips
+already-known Relay tickets when requested.
+
+\subsection{Failure semantics}\label{failure-semantics}
+
+The design prefers explicit rejection over guessing. Invalid
+email/date/money/priority/JSON input is rejected. Unknown schema
+versions are rejected. Duplicate unique identities are rejected. Illegal
+deal transitions are rejected. Audit mutation is rejected. Conversion
+from a non-qualified/already-converted lead is rejected. The command
+exits nonzero and does not manufacture a successful result.
+
+\end{document}

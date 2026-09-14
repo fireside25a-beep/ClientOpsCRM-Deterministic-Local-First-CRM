@@ -1,0 +1,385 @@
+{
+  "id": "clr_cloud_intake1",
+  "name": "ClientOps Relay - Cloud API Intake",
+  "active": false,
+  "nodes": [
+    {
+      "id": "intake-webhook",
+      "name": "Request Webhook",
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2.1,
+      "position": [
+        0,
+        240
+      ],
+      "parameters": {
+        "authentication": "headerAuth",
+        "httpMethod": "POST",
+        "path": "clientops/leads",
+        "responseMode": "responseNode",
+        "options": {}
+      },
+      "credentials": {
+        "httpHeaderAuth": {
+          "id": "clientops-intake-api-key",
+          "name": "ClientOps Intake API Key"
+        }
+      },
+      "webhookId": "clientops-cloud-lead-intake-v1"
+    },
+    {
+      "id": "intake-validate",
+      "name": "Validate Request",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        240,
+        240
+      ],
+      "parameters": {
+        "mode": "runOnceForAllItems",
+        "language": "javaScript",
+        "jsCode": "const items = $input.all();\nreturn items.map((item) => {\n  const request = item.json ?? {};\n  const headers = request.headers ?? {};\n  const body = request.body;\n  const errors = [];\n  const key = String(headers['idempotency-key'] ?? '').trim();\n  const control = /[\\u0000-\\u001f\\u007f]/;\n  const allowed = new Set(['name', 'email', 'city', 'phone', 'source', 'message', 'consent']);\n  if (!/^[A-Za-z0-9._:-]{8,128}$/.test(key)) errors.push('Idempotency-Key must be 8-128 safe characters');\n  if (!body || Array.isArray(body) || typeof body !== 'object') errors.push('body must be a JSON object');\n  if (body && typeof body === 'object' && !Array.isArray(body)) {\n    for (const field of Object.keys(body)) if (!allowed.has(field)) errors.push('unknown field: ' + field);\n    const checks = [\n      ['name', true, 159], ['email', true, 255], ['city', false, 127],\n      ['phone', false, 63], ['source', false, 95], ['message', true, 8191],\n    ];\n    for (const [field, required, max] of checks) {\n      const value = body[field];\n      if ((value === undefined || value === '') && required) errors.push(field + ' is required');\n      if (value !== undefined && typeof value !== 'string') errors.push(field + ' must be a string');\n      if (typeof value === 'string' && value.length > max) errors.push(field + ' exceeds ' + max + ' characters');\n    }\n    if (body.consent !== true) errors.push('consent must be true');\n    if (typeof body.name === 'string' && control.test(body.name)) errors.push('name contains control characters');\n    if (typeof body.city === 'string' && control.test(body.city)) errors.push('city contains control characters');\n    if (typeof body.source === 'string' && control.test(body.source)) errors.push('source contains control characters');\n    if (typeof body.email === 'string') {\n      const email = body.email.trim();\n      const at = email.indexOf('@');\n      const valid = email.length >= 3 && email.length <= 254 && !control.test(email)\n        && at > 0 && at === email.lastIndexOf('@') && email.indexOf('.', at + 2) > at + 1\n        && !email.endsWith('.');\n      if (!valid) errors.push('email is invalid');\n    }\n    if (JSON.stringify(body).length > 30000) errors.push('body exceeds the 30 KB workflow limit');\n  }\n  if (errors.length) {\n    return { json: { valid: false, statusCode: 422, response: {\n      ok: false, error: { code: 'invalid_request', message: 'Request validation failed', details: errors.slice(0, 12) }\n    } } };\n  }\n  return { json: {\n    valid: true,\n    idempotencyKey: key,\n    policyRequest: {\n      leadId: key.slice(0, 31),\n      channel: 'webhook',\n      name: body.name,\n      city: body.city ?? '',\n      phone: body.phone ?? '',\n      email: body.email,\n      source: body.source ?? 'webhook',\n      message: body.message,\n      consent: true,\n    },\n  } };\n});"
+      }
+    },
+    {
+      "id": "intake-is-valid",
+      "name": "Request Valid?",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.3,
+      "position": [
+        480,
+        240
+      ],
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 3
+          },
+          "conditions": [
+            {
+              "id": "intake-is-valid-condition",
+              "leftValue": "={{ $json.valid }}",
+              "rightValue": "",
+              "operator": {
+                "type": "boolean",
+                "operation": "true",
+                "singleValue": true
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      }
+    },
+    {
+      "id": "intake-policy",
+      "name": "Qualify Deterministically",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.5,
+      "position": [
+        720,
+        120
+      ],
+      "parameters": {
+        "method": "POST",
+        "url": "={{ $vars.CLIENTOPS_COMPANION_URL.replace(/\\/$/, '') + '/v2/qualify' }}",
+        "sendBody": true,
+        "contentType": "json",
+        "specifyBody": "json",
+        "jsonBody": "={{ $json.policyRequest }}",
+        "options": {
+          "timeout": 5000,
+          "response": {
+            "response": {
+              "fullResponse": true,
+              "neverError": true,
+              "responseFormat": "json"
+            }
+          }
+        },
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpHeaderAuth"
+      },
+      "retryOnFail": true,
+      "maxTries": 3,
+      "waitBetweenTries": 1000,
+      "onError": "continueErrorOutput",
+      "credentials": {
+        "httpHeaderAuth": {
+          "id": "clientops-companion-api-key",
+          "name": "ClientOps Companion API Key"
+        }
+      }
+    },
+    {
+      "id": "intake-evaluate-policy",
+      "name": "Evaluate Policy Response",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        960,
+        120
+      ],
+      "parameters": {
+        "mode": "runOnceForAllItems",
+        "language": "javaScript",
+        "jsCode": "return $input.all().map((item) => {\n  const status = Number(item.json.statusCode ?? 0);\n  const body = item.json.body;\n  const decision = body?.decision;\n  const routes = new Set([\n    'ROUTE_URGENT', 'ROUTE_SPECIALIST', 'ROUTE_STANDARD', 'ROUTE_SPAM',\n    'ROUTE_UNSUPPORTED', 'ROUTE_INSUFFICIENT_INFORMATION',\n    'ROUTE_MANUAL_REVIEW', 'ROUTE_LOCATION_REVIEW',\n  ]);\n  const policyShapeValid = body && !Array.isArray(body) && typeof body === 'object'\n    && body.ok === true\n    && body.policyVersion === 'clientops-triage-v1'\n    && decision && !Array.isArray(decision) && typeof decision === 'object'\n    && typeof decision.fit === 'boolean'\n    && typeof decision.fitReason === 'string'\n    && typeof decision.category === 'string' && decision.category.length > 0\n    && Number.isInteger(decision.score) && decision.score >= 0 && decision.score <= 100\n    && typeof decision.serviceable === 'boolean'\n    && ['low', 'medium', 'high'].includes(decision.urgency)\n    && typeof decision.summary === 'string'\n    && typeof decision.nextStep === 'string'\n    && typeof decision.draftReply === 'string'\n    && routes.has(decision.route);\n  if (status === 200 && policyShapeValid) {\n    return { json: { accepted: true, policy: body }, pairedItem: item.pairedItem };\n  }\n  const validation = status === 422;\n  return { json: {\n    accepted: false,\n    statusCode: validation ? 422 : 503,\n    response: validation\n      ? { ok: false, error: { code: 'invalid_request', message: body?.error?.message ?? 'Request data was rejected' } }\n      : { ok: false, error: { code: 'service_unavailable', message: 'Request intake is temporarily unavailable' } },\n  }, pairedItem: item.pairedItem };\n});"
+      }
+    },
+    {
+      "id": "intake-policy-accepted",
+      "name": "Policy Accepted?",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.3,
+      "position": [
+        1200,
+        120
+      ],
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 3
+          },
+          "conditions": [
+            {
+              "id": "intake-policy-accepted-condition",
+              "leftValue": "={{ $json.accepted }}",
+              "rightValue": "",
+              "operator": {
+                "type": "boolean",
+                "operation": "true",
+                "singleValue": true
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      }
+    },
+    {
+      "id": "intake-store",
+      "name": "Store Request and Outbox",
+      "type": "n8n-nodes-base.postgres",
+      "typeVersion": 2.7,
+      "position": [
+        1440,
+        40
+      ],
+      "parameters": {
+        "operation": "executeQuery",
+        "query": "SELECT\n       status_code AS \"statusCode\",\n       outcome,\n       ticket_id AS \"ticketId\",\n       public_message AS \"message\",\n       priority,\n       route,\n       sla_due_at AS \"slaDueAt\"\n     FROM clientops.ingest_lead($1, $2::jsonb, $3::jsonb);",
+        "options": {
+          "queryReplacement": "={{ [ $('Validate Request').item.json.idempotencyKey, JSON.stringify($('Validate Request').item.json.policyRequest), JSON.stringify($json.policy) ] }}"
+        }
+      },
+      "credentials": {
+        "postgres": {
+          "id": "clientops-postgres",
+          "name": "ClientOps PostgreSQL"
+        }
+      },
+      "retryOnFail": true,
+      "maxTries": 3,
+      "waitBetweenTries": 1000,
+      "onError": "continueErrorOutput"
+    },
+    {
+      "id": "intake-public-response",
+      "name": "Build Public Response",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        1680,
+        40
+      ],
+      "parameters": {
+        "mode": "runOnceForAllItems",
+        "language": "javaScript",
+        "jsCode": "return $input.all().map((item) => {\n  const statusCode = Number(item.json.statusCode);\n  const response = statusCode === 409\n    ? { ok: false, error: { code: 'idempotency_conflict', message: item.json.message } }\n    : {\n        ok: true,\n        outcome: item.json.outcome,\n        ticketId: item.json.ticketId,\n        message: item.json.message,\n      };\n  return { json: { statusCode, response }, pairedItem: item.pairedItem };\n});"
+      }
+    },
+    {
+      "id": "intake-unavailable",
+      "name": "Build Unavailable Response",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        1440,
+        360
+      ],
+      "parameters": {
+        "mode": "runOnceForAllItems",
+        "language": "javaScript",
+        "jsCode": "return $input.all().map(() => ({ json: {\n  statusCode: 503,\n  response: { ok: false, error: { code: 'service_unavailable', message: 'Request intake is temporarily unavailable' } },\n} }));"
+      }
+    },
+    {
+      "id": "intake-respond",
+      "name": "Respond to Client",
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1.5,
+      "position": [
+        1920,
+        240
+      ],
+      "parameters": {
+        "respondWith": "json",
+        "responseBody": "={{ $json.response }}",
+        "options": {
+          "responseCode": "={{ $json.statusCode }}"
+        }
+      }
+    }
+  ],
+  "connections": {
+    "Request Webhook": {
+      "main": [
+        [
+          {
+            "node": "Validate Request",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Validate Request": {
+      "main": [
+        [
+          {
+            "node": "Request Valid?",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Request Valid?": {
+      "main": [
+        [
+          {
+            "node": "Qualify Deterministically",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Respond to Client",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Qualify Deterministically": {
+      "main": [
+        [
+          {
+            "node": "Evaluate Policy Response",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Build Unavailable Response",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Evaluate Policy Response": {
+      "main": [
+        [
+          {
+            "node": "Policy Accepted?",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Policy Accepted?": {
+      "main": [
+        [
+          {
+            "node": "Store Request and Outbox",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Respond to Client",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Store Request and Outbox": {
+      "main": [
+        [
+          {
+            "node": "Build Public Response",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Build Unavailable Response",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Build Public Response": {
+      "main": [
+        [
+          {
+            "node": "Respond to Client",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Build Unavailable Response": {
+      "main": [
+        [
+          {
+            "node": "Respond to Client",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "settings": {
+    "executionOrder": "v1",
+    "saveDataErrorExecution": "none",
+    "saveDataSuccessExecution": "none",
+    "saveManualExecutions": false,
+    "saveExecutionProgress": false,
+    "executionTimeout": 60
+  },
+  "pinData": {},
+  "meta": {
+    "templateCredsSetupCompleted": true
+  },
+  "tags": []
+}

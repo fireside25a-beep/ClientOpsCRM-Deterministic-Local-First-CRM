@@ -1,0 +1,172 @@
+=== policy ===
+make: Entering directory '/mnt/data/ClientOpsCRM_2.0.0_SOURCE_AIO/policy-engine'
+mkdir -p build
+cc -D_POSIX_C_SOURCE=200809L -DCJSON_NESTING_LIMIT=64 -Iinclude -Ithird_party -std=c11 -O2 -Wall -Wextra -Wpedantic -Werror  src/policy_cli.c src/config.c src/lead.c src/lead_rules.c src/lead_router.c third_party/cJSON.c -lm -o build/policy_cli
+node tests/test_supply_chain.mjs
+Supply chain: cJSON 1.7.19, OCI image indexes, and native linkage verified.
+node tests/test_policy.mjs build/policy_cli config/policy.json
+{"status":"PASS","cases":13,"deterministicRepetitions":100,"referenceSha256":"0ec3664b6826705d5b1fd5aade3f7e5a2061565f8942012133b036aac44509ab","policyVersion":"clientops-triage-v1"}
+node tests/test_server.mjs build/policy_cli config/policy.json
+{
+  "status": "PASS",
+  "contract": "policy-http",
+  "endpoint": "/v2/qualify",
+  "statuses": [
+    200,
+    422,
+    404,
+    415
+  ]
+}
+make: Leaving directory '/mnt/data/ClientOpsCRM_2.0.0_SOURCE_AIO/policy-engine'
+=== parity ===
+make: Entering directory '/mnt/data/ClientOpsCRM_2.0.0_SOURCE_AIO/policy-engine'
+mkdir -p build/debug
+cc -D_POSIX_C_SOURCE=200809L -DCJSON_NESTING_LIMIT=64 -Iinclude -Ithird_party -std=c11 -O0 -g3 -Wall -Wextra -Wpedantic -Werror  src/policy_cli.c src/config.c src/lead.c src/lead_rules.c src/lead_router.c third_party/cJSON.c -lm -o build/debug/policy_cli
+mkdir -p build/asan
+cc -D_POSIX_C_SOURCE=200809L -DCJSON_NESTING_LIMIT=64 -Iinclude -Ithird_party -std=c11 -O1 -g3 -Wall -Wextra -Wpedantic -Werror -fsanitize=address -fno-omit-frame-pointer \
+	 -fsanitize=address src/policy_cli.c src/config.c src/lead.c src/lead_rules.c src/lead_router.c third_party/cJSON.c -lm -o build/asan/policy_cli
+mkdir -p build/ubsan
+cc -D_POSIX_C_SOURCE=200809L -DCJSON_NESTING_LIMIT=64 -Iinclude -Ithird_party -std=c11 -O1 -g3 -Wall -Wextra -Wpedantic -Werror -fsanitize=undefined -fno-omit-frame-pointer \
+	 -fsanitize=undefined src/policy_cli.c src/config.c src/lead.c src/lead_rules.c src/lead_router.c third_party/cJSON.c -lm -o build/ubsan/policy_cli
+node tests/test_build_parity.mjs build/policy_cli build/debug/policy_cli build/asan/policy_cli build/ubsan/policy_cli config/policy.json
+Native build parity: 13 cases across Release/Debug/ASan/UBSan = 76309ffb055b448b035493fce0d8123ab537e43e0aeb778f1ff4aebf99da0904
+make: Leaving directory '/mnt/data/ClientOpsCRM_2.0.0_SOURCE_AIO/policy-engine'
+=== companion ===
+{
+  "status": "PASS",
+  "contract": "deployment-companion",
+  "endpoint": "/v2/qualify",
+  "policy": "real compiled subprocess",
+  "deterministicRepetitions": 20,
+  "responseSha256": "8e3d923fb8ad7222610095ca61b7df1b2ddc306a118bd49ab15594e851ad633d",
+  "observedStatuses": [
+    200,
+    401,
+    404,
+    405,
+    413,
+    415,
+    422
+  ]
+}
+=== backup ===
+Backup integrity: copied encrypted state is checksum-verified before mutation.
+=== workflows ===
+{
+  "status": "PASS",
+  "contract": "workflows",
+  "n8n": "2.37.10",
+  "core": 7,
+  "optionalAdapters": 1,
+  "nodes": 48,
+  "webhookPaths": [
+    "clientops/leads",
+    "clientops/leads/contacted"
+  ]
+}
+=== deployment ===
+{
+  "status": "PASS",
+  "contract": "deployment",
+  "exactPins": 6,
+  "executionPersistenceDisabled": true,
+  "splitWebhookSecrets": true,
+  "codeRunnerProbed": true,
+  "staleMarkerRepair": true,
+  "mailpitReadinessProbed": true,
+  "trackedDatabaseMigration": true,
+  "configurableTimezone": true,
+  "configurableRegions": [
+    "any",
+    "allowlist"
+  ],
+  "noIpRetention": true,
+  "hardenedCompanionImageBoundary": true,
+  "trustedTlsEdgeConfiguration": true,
+  "directN8nExposureRemoved": true,
+  "postgresHostExposureRemoved": true,
+  "editorEdgeAuthentication": true,
+  "edgeRateControls": true,
+  "proxyHops": 1,
+  "aliasHeaderSpoofingRejected": true,
+  "pathSanitization": true,
+  "minimumTlsVersion": "TLS1.2"
+}
+=== edge ===
+{
+  "status": "PASS",
+  "contract": "edge-security",
+  "localLoopbackHttpsConfig": true,
+  "publicAcmeConfigRendered": true,
+  "livePublicCertificateIssuance": "NOT_RUN_REQUIRES_PUBLIC_DNS_AND_PORTS_80_443",
+  "n8nDirectHostPort": false,
+  "postgresHostPort": false,
+  "mailpitLoopbackOnly": true,
+  "ntfyLoopbackOnly": true,
+  "editorBasicAuth": true,
+  "publicWebhookPaths": [
+    "/webhook/clientops/leads",
+    "/webhook/clientops/leads/contacted"
+  ],
+  "arbitraryWebhookPrefixExposed": false,
+  "requestBodyLimitBytes": 1048576,
+  "routeRateLimits": true,
+  "secureCookies": true,
+  "proxyHops": 1,
+  "deterministicRenderSha256": "c7f115445d55239186d4dd75b99f4ad8f95719b158697ce3d506002a757af6e2",
+  "forwardReverseByteIdentity": true,
+  "dockerSocketMounted": false,
+  "aliasHeaderSpoofingRejected": true,
+  "pathSanitization": true,
+  "maxHeaderBytes": 65536,
+  "minimumTlsVersion": "TLS1.2",
+  "strictTlsOptions": true,
+  "adversarialEdgeMutantsRejected": "14/14"
+}
+=== deploy renderers ===
+{
+  "status": "PASS",
+  "contract": "deployment-renderers",
+  "providers": [
+    "Railway",
+    "Kubernetes",
+    "Render",
+    "n8n Cloud"
+  ],
+  "deterministicTrees": 2,
+  "secretValuesEmbedded": false,
+  "companionBoundary": [
+    "/healthz",
+    "/readyz",
+    "/v2/qualify"
+  ]
+}
+=== installer ===
+{"status":"PASS","contract":"installer","unsafeEmailRejected":true,"unsafeTimezoneRejected":true,"mode":"0600","existingSecretsPreserved":true,"defaultTimezone":"UTC","timezoneUpdatePreservedSecrets":true,"regionModes":["any","allowlist"],"edgeModes":["local","public"],"edgeRenderDeterministic":true}
+=== docs ===
+{
+  "status": "PASS",
+  "contract": "docs",
+  "markdownFiles": 31,
+  "localLinks": 40
+}
+=== domain neutrality ===
+{
+  "status": "PASS",
+  "contract": "domain-neutrality",
+  "scannedFiles": 105,
+  "compatibilityExceptions": [
+    "database/migrations/002-universal-v1.1.sql",
+    "tests/domain-neutrality.mjs",
+    "tests/fixtures/core-v1/01-api-lead-intake.json",
+    "tests/fixtures/core-v1/20-outbox-dispatcher.json",
+    "tests/fixtures/core-v1/30-sla-monitor.json",
+    "tests/fixtures/core-v1/40-daily-digest.json",
+    "tests/fixtures/core-v1/50-mark-contacted.json",
+    "tests/fixtures/core-v1/60-retention-maintenance.json",
+    "tests/fixtures/core-v1/90-error-sink.json",
+    "tests/upgrade.mjs"
+  ],
+  "compiledBinaryInspected": true
+}

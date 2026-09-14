@@ -1,0 +1,67 @@
+{
+  "combined_identity": "2.0.0+relay1.2.1",
+  "crm": {
+    "checks": 27,
+    "features": [
+      "accounts",
+      "contacts",
+      "leads",
+      "atomic lead conversion",
+      "pipelines",
+      "stages",
+      "deals",
+      "tasks",
+      "notes",
+      "custom fields",
+      "FTS5 search",
+      "dedupe signals",
+      "dashboard",
+      "weighted forecast",
+      "timeline",
+      "append-only audit",
+      "CSV import/export",
+      "JSON export",
+      "doctor"
+    ],
+    "integration_test": "crm/tests/test_crm.py",
+    "language": "C++17",
+    "persistence": "SQLite",
+    "source": "crm/src/clientops_crm.cpp"
+  },
+  "digests": {
+    "crm_source_sha256": "7e3e203ec3a5fe5624a562920fad753bffe89932362884ec7770eded4fa5ce60",
+    "crm_test_sha256": "32f8336024ac4c8f264de51a41855a94bbf7723488a9d1435f719a93b7cbc4c1"
+  },
+  "product": "ClientOpsCRM",
+  "relay": {
+    "release_manifest": "RELEASE_MANIFEST.json",
+    "role": "deterministic intake/automation subsystem",
+    "version": "1.2.1"
+  },
+  "research": {
+    "sources": 143,
+    "unique_urls": 143
+  },
+  "verification": {
+    "CLANG17_INTEGRATION_TEST.json": {
+      "checks_passed": 27,
+      "status": "PASS"
+    },
+    "GCC_ASAN_UBSAN_INTEGRATION_TEST.json": {
+      "checks_passed": 27,
+      "status": "PASS"
+    },
+    "GCC_DEBUG_INTEGRATION_TEST.json": {
+      "checks_passed": 27,
+      "status": "PASS"
+    },
+    "GCC_RELEASE_INTEGRATION_TEST.json": {
+      "checks_passed": 27,
+      "status": "PASS"
+    },
+    "clang_static_analyzer": "PASS_ZERO_DIAGNOSTICS",
+    "combined_launcher": "PASS",
+    "relay_available_native_gates": "PASS"
+  },
+  "version": "2.0.0"
+}

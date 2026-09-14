@@ -1,0 +1,98 @@
+{
+  "id": "clr_sla_mon_0001",
+  "name": "ClientOps Relay — SLA Monitor",
+  "active": false,
+  "nodes": [
+    {
+      "id": "clr_sla_mon_0001-schedule",
+      "name": "Every Five Minutes",
+      "type": "n8n-nodes-base.scheduleTrigger",
+      "typeVersion": 1.3,
+      "position": [
+        0,
+        80
+      ],
+      "parameters": {
+        "rule": {
+          "interval": [
+            {
+              "field": "minutes",
+              "minutesInterval": 5
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "clr_sla_mon_0001-manual",
+      "name": "Run SLA Check Manually",
+      "type": "n8n-nodes-base.manualTrigger",
+      "typeVersion": 1,
+      "position": [
+        0,
+        280
+      ],
+      "parameters": {}
+    },
+    {
+      "id": "clr_sla_mon_0001-query",
+      "name": "Queue Overdue Escalations",
+      "type": "n8n-nodes-base.postgres",
+      "typeVersion": 2.7,
+      "position": [
+        200,
+        180
+      ],
+      "parameters": {
+        "operation": "executeQuery",
+        "query": "SELECT * FROM clientops.schedule_due_followups();",
+        "options": {}
+      },
+      "credentials": {
+        "postgres": {
+          "id": "clientops-postgres",
+          "name": "ClientOps PostgreSQL"
+        }
+      }
+    }
+  ],
+  "connections": {
+    "Every Five Minutes": {
+      "main": [
+        [
+          {
+            "node": "Queue Overdue Escalations",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Run SLA Check Manually": {
+      "main": [
+        [
+          {
+            "node": "Queue Overdue Escalations",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "settings": {
+    "executionOrder": "v1",
+    "errorWorkflow": "clr_errors_00001",
+    "saveDataErrorExecution": "none",
+    "saveDataSuccessExecution": "none",
+    "saveManualExecutions": false,
+    "saveExecutionProgress": false,
+    "executionTimeout": 60,
+    "timezone": "Asia/Nicosia"
+  },
+  "pinData": {},
+  "meta": {
+    "templateCredsSetupCompleted": true
+  },
+  "tags": []
+}

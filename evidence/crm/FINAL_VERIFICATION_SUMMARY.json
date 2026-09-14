@@ -1,0 +1,35 @@
+{
+  "clang_static_analyzer": "PASS_ZERO_DIAGNOSTICS",
+  "combined_launcher": "PASS",
+  "crm_executable_gates": {
+    "CLANG17_INTEGRATION_TEST.json": {
+      "checks_passed": 27,
+      "status": "PASS"
+    },
+    "GCC_ASAN_UBSAN_INTEGRATION_TEST.json": {
+      "checks_passed": 27,
+      "status": "PASS"
+    },
+    "GCC_DEBUG_INTEGRATION_TEST.json": {
+      "checks_passed": 27,
+      "status": "PASS"
+    },
+    "GCC_RELEASE_INTEGRATION_TEST.json": {
+      "checks_passed": 27,
+      "status": "PASS"
+    }
+  },
+  "crm_source_sha256": "7e3e203ec3a5fe5624a562920fad753bffe89932362884ec7770eded4fa5ce60",
+  "crm_test_sha256": "32f8336024ac4c8f264de51a41855a94bbf7723488a9d1435f719a93b7cbc4c1",
+  "product": "ClientOpsCRM",
+  "relay_available_native_gates": "PASS",
+  "relay_baseline": "1.2.1",
+  "relay_external_runtime_boundaries": {
+    "exact_n8n_container_gates": "NOT_RERUN_EXACT_RUNTIME_UNAVAILABLE",
+    "live_provider_deployments": "NOT_RUN_CREDENTIALS_DNS_TLS_REQUIRED",
+    "pglite_database_upgrade": "NOT_RERUN_PACKAGE_UNAVAILABLE_OFFLINE"
+  },
+  "research_sources": 143,
+  "research_unique_urls": 143,
+  "version": "2.0.0"
+}

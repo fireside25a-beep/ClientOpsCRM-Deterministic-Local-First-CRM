@@ -1,0 +1,141 @@
+% Options for packages loaded elsewhere
+\PassOptionsToPackage{unicode}{hyperref}
+\PassOptionsToPackage{hyphens}{url}
+%
+\documentclass[
+]{article}
+\usepackage{amsmath,amssymb}
+\usepackage{iftex}
+\ifPDFTeX
+  \usepackage[T1]{fontenc}
+  \usepackage[utf8]{inputenc}
+  \usepackage{textcomp} % provide euro and other symbols
+\else % if luatex or xetex
+  \usepackage{unicode-math} % this also loads fontspec
+  \defaultfontfeatures{Scale=MatchLowercase}
+  \defaultfontfeatures[\rmfamily]{Ligatures=TeX,Scale=1}
+\fi
+\usepackage{lmodern}
+\ifPDFTeX\else
+  % xetex/luatex font selection
+  \setmainfont[]{DejaVu Sans}
+  \setmonofont[]{DejaVu Sans Mono}
+\fi
+% Use upquote if available, for straight quotes in verbatim environments
+\IfFileExists{upquote.sty}{\usepackage{upquote}}{}
+\IfFileExists{microtype.sty}{% use microtype if available
+  \usepackage[]{microtype}
+  \UseMicrotypeSet[protrusion]{basicmath} % disable protrusion for tt fonts
+}{}
+\makeatletter
+\@ifundefined{KOMAClassName}{% if non-KOMA class
+  \IfFileExists{parskip.sty}{%
+    \usepackage{parskip}
+  }{% else
+    \setlength{\parindent}{0pt}
+    \setlength{\parskip}{6pt plus 2pt minus 1pt}}
+}{% if KOMA class
+  \KOMAoptions{parskip=half}}
+\makeatother
+\usepackage{xcolor}
+\usepackage[margin=24mm]{geometry}
+\setlength{\emergencystretch}{3em} % prevent overfull lines
+\providecommand{\tightlist}{%
+  \setlength{\itemsep}{0pt}\setlength{\parskip}{0pt}}
+\setcounter{secnumdepth}{-\maxdimen} % remove section numbering
+\ifLuaTeX
+  \usepackage{selnolig}  % disable illegal ligatures
+\fi
+\usepackage{bookmark}
+\IfFileExists{xurl.sty}{\usepackage{xurl}}{} % add URL line breaks if available
+\urlstyle{same}
+\hypersetup{
+  hidelinks,
+  pdfcreator={LaTeX via pandoc}}
+
+\author{}
+\date{}
+
+\begin{document}
+
+\section{ClientOpsCRM 2.0.0 Glossary}\label{clientopscrm-200-glossary}
+
+\textbf{Account} --- Organization/company record. May own many contacts
+and deals.
+
+\textbf{Activity} --- Business-facing event in an entity timeline, such
+as creation, qualification, conversion, stage move or closure.
+
+\textbf{Actor} --- Operator/automation identity attached to audit
+mutations through the CRM connection context.
+
+\textbf{Audit log} --- Append-only database record of mutations with
+actor and JSON before/after evidence where applicable.
+
+\textbf{ClientOps Relay} --- Existing 1.2.1 deterministic
+intake/automation subsystem retained in the combined release.
+
+\textbf{ClientOpsCRM} --- Compiled operator-side CRM introduced in
+version 2.0.0.
+
+\textbf{Contact} --- Person record, optionally associated with an
+account.
+
+\textbf{Conversion} --- Transaction that transforms a qualified lead
+into durable account/contact/deal links and marks the lead converted.
+
+\textbf{Custom value} --- Operator-defined key/value attached to an
+account, contact, lead or deal; key syntax is constrained.
+
+\textbf{Deal / opportunity} --- Qualified commercial pursuit that
+belongs to a pipeline and stage until won/lost.
+
+\textbf{Dedupe signal} --- Normalized identity collision presented for
+review; not every signal is automatically merged.
+
+\textbf{Doctor} --- Executable database/invariant health check.
+
+\textbf{Expected close} --- Validated calendar date associated with a
+deal.
+
+\textbf{FTS5} --- SQLite full-text-search extension used by
+\texttt{search}.
+
+\textbf{Lead} --- Pre-opportunity record that may be new, qualified,
+disqualified or converted.
+
+\textbf{Minor units} --- Integer representation of money at two decimal
+places (e.g. EUR 12.34 → 1234) used to avoid binary floating-point
+storage.
+
+\textbf{Normalized identity} --- Canonical form used for
+uniqueness/matching, such as lowercase email/domain or digits-only
+phone.
+
+\textbf{Owner} --- Business ownership label stored on the relevant CRM
+record.
+
+\textbf{Pipeline} --- Ordered sales process containing stages.
+
+\textbf{Probability} --- Integer 0..100 attached to a stage and
+synchronized into a deal for deterministic weighted pipeline reporting.
+
+\textbf{Relay ticket ID} --- Stable UUID from Relay used as the import
+identity for a CRM lead.
+
+\textbf{Stage} --- Ordered pipeline state with name, probability and
+kind (\texttt{open}, \texttt{won}, \texttt{lost}).
+
+\textbf{Task} --- Follow-up work item attached to one core CRM entity.
+
+\textbf{Timeline} --- Ordered activity view for business history;
+distinct from mutation audit.
+
+\textbf{Transactional} --- A multi-step operation that commits
+atomically or rolls back as a unit.
+
+\textbf{Weighted forecast} --- Sum of amount\_minor × probability / 100
+across open deals; an inspectable arithmetic summary, not a learned
+predictor.
+
+\end{document}

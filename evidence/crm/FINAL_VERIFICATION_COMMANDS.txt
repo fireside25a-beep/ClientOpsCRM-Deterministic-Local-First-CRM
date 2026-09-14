@@ -1,0 +1,38 @@
+ClientOpsCRM 2.0.0 final verification command classes
+
+CRM builds:
+  make -C crm clean
+  make -C crm release debug sanitize
+
+CRM behavioral/adversarial suite:
+  python3 crm/tests/test_crm.py
+  CRM_BIN=crm/build/clientops-crm-debug python3 crm/tests/test_crm.py
+  CRM_BIN=crm/build/clientops-crm-sanitize python3 crm/tests/test_crm.py
+
+Independent compiler:
+  clang++ [sqlite3 cflags] -std=c++17 -O2 -Wall -Wextra -Wpedantic -Werror -fstack-protector-strong crm/src/clientops_crm.cpp -o clientops-crm-clang [sqlite3 libs]
+  CRM_BIN=clientops-crm-clang python3 crm/tests/test_crm.py
+
+Static analysis:
+  clang++ [sqlite3 cflags] -std=c++17 -Wall -Wextra -Wpedantic -Werror --analyze -Xanalyzer -analyzer-output=text crm/src/clientops_crm.cpp
+
+Combined launcher:
+  sh -n clientops
+  bash -n crm/scripts/import-relay.sh
+  CLIENTOPS_CRM_DB=<temporary-db> ./clientops crm version
+  CLIENTOPS_CRM_DB=<temporary-db> ./clientops crm doctor
+  CLIENTOPS_CRM_DB=<temporary-db> ./clientops crm --json dashboard
+  ./clientops crm-build
+
+Relay gates rerun without external package downloads:
+  make -C policy-engine test
+  make -C policy-engine parity
+  node tests/companion.mjs
+  node tests/backup-integrity.mjs
+  node tests/workflows.mjs
+  node tests/deployment.mjs
+  node tests/edge-security.mjs
+  node tests/deploy-renderers.mjs
+  sh tests/installer.sh
+  node tests/docs.mjs
+  node tests/domain-neutrality.mjs

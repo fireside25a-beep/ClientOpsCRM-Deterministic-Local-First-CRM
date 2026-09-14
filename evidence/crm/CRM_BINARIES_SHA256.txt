@@ -1,0 +1,4 @@
+148cf3ef2b50e1ceae742cf007b1477b1fc542676a4632b4ebb7a8a1e39ffdea  /mnt/data/ClientOpsCRM_2.0.0_SOURCE_AIO/crm/build/clientops-crm
+aa15b6907f6ac762e9c9cc38104d7c327930eb919aa321944e0f184931bb039c  /mnt/data/ClientOpsCRM_2.0.0_SOURCE_AIO/crm/build/clientops-crm-debug
+495a27dc1aa0d2307fd57ab6daf7089daaaff9d14a6323b073e6a55c005748d5  /mnt/data/ClientOpsCRM_2.0.0_SOURCE_AIO/crm/build/clientops-crm-sanitize
+90d595c9c244d0f3d84a2d3b9b027b08f1d6029083319c91e85b90a0d26cc27c  /mnt/data/clientopscrm_final_gate/clientops-crm-clang

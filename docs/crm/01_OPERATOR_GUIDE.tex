@@ -1,0 +1,306 @@
+% Options for packages loaded elsewhere
+\PassOptionsToPackage{unicode}{hyperref}
+\PassOptionsToPackage{hyphens}{url}
+%
+\documentclass[
+]{article}
+\usepackage{amsmath,amssymb}
+\usepackage{iftex}
+\ifPDFTeX
+  \usepackage[T1]{fontenc}
+  \usepackage[utf8]{inputenc}
+  \usepackage{textcomp} % provide euro and other symbols
+\else % if luatex or xetex
+  \usepackage{unicode-math} % this also loads fontspec
+  \defaultfontfeatures{Scale=MatchLowercase}
+  \defaultfontfeatures[\rmfamily]{Ligatures=TeX,Scale=1}
+\fi
+\usepackage{lmodern}
+\ifPDFTeX\else
+  % xetex/luatex font selection
+  \setmainfont[]{DejaVu Sans}
+  \setmonofont[]{DejaVu Sans Mono}
+\fi
+% Use upquote if available, for straight quotes in verbatim environments
+\IfFileExists{upquote.sty}{\usepackage{upquote}}{}
+\IfFileExists{microtype.sty}{% use microtype if available
+  \usepackage[]{microtype}
+  \UseMicrotypeSet[protrusion]{basicmath} % disable protrusion for tt fonts
+}{}
+\makeatletter
+\@ifundefined{KOMAClassName}{% if non-KOMA class
+  \IfFileExists{parskip.sty}{%
+    \usepackage{parskip}
+  }{% else
+    \setlength{\parindent}{0pt}
+    \setlength{\parskip}{6pt plus 2pt minus 1pt}}
+}{% if KOMA class
+  \KOMAoptions{parskip=half}}
+\makeatother
+\usepackage{xcolor}
+\usepackage[margin=24mm]{geometry}
+\usepackage{color}
+\usepackage{fancyvrb}
+\newcommand{\VerbBar}{|}
+\newcommand{\VERB}{\Verb[commandchars=\\\{\}]}
+\DefineVerbatimEnvironment{Highlighting}{Verbatim}{commandchars=\\\{\}}
+% Add ',fontsize=\small' for more characters per line
+\newenvironment{Shaded}{}{}
+\newcommand{\AlertTok}[1]{\textcolor[rgb]{1.00,0.00,0.00}{\textbf{#1}}}
+\newcommand{\AnnotationTok}[1]{\textcolor[rgb]{0.38,0.63,0.69}{\textbf{\textit{#1}}}}
+\newcommand{\AttributeTok}[1]{\textcolor[rgb]{0.49,0.56,0.16}{#1}}
+\newcommand{\BaseNTok}[1]{\textcolor[rgb]{0.25,0.63,0.44}{#1}}
+\newcommand{\BuiltInTok}[1]{\textcolor[rgb]{0.00,0.50,0.00}{#1}}
+\newcommand{\CharTok}[1]{\textcolor[rgb]{0.25,0.44,0.63}{#1}}
+\newcommand{\CommentTok}[1]{\textcolor[rgb]{0.38,0.63,0.69}{\textit{#1}}}
+\newcommand{\CommentVarTok}[1]{\textcolor[rgb]{0.38,0.63,0.69}{\textbf{\textit{#1}}}}
+\newcommand{\ConstantTok}[1]{\textcolor[rgb]{0.53,0.00,0.00}{#1}}
+\newcommand{\ControlFlowTok}[1]{\textcolor[rgb]{0.00,0.44,0.13}{\textbf{#1}}}
+\newcommand{\DataTypeTok}[1]{\textcolor[rgb]{0.56,0.13,0.00}{#1}}
+\newcommand{\DecValTok}[1]{\textcolor[rgb]{0.25,0.63,0.44}{#1}}
+\newcommand{\DocumentationTok}[1]{\textcolor[rgb]{0.73,0.13,0.13}{\textit{#1}}}
+\newcommand{\ErrorTok}[1]{\textcolor[rgb]{1.00,0.00,0.00}{\textbf{#1}}}
+\newcommand{\ExtensionTok}[1]{#1}
+\newcommand{\FloatTok}[1]{\textcolor[rgb]{0.25,0.63,0.44}{#1}}
+\newcommand{\FunctionTok}[1]{\textcolor[rgb]{0.02,0.16,0.49}{#1}}
+\newcommand{\ImportTok}[1]{\textcolor[rgb]{0.00,0.50,0.00}{\textbf{#1}}}
+\newcommand{\InformationTok}[1]{\textcolor[rgb]{0.38,0.63,0.69}{\textbf{\textit{#1}}}}
+\newcommand{\KeywordTok}[1]{\textcolor[rgb]{0.00,0.44,0.13}{\textbf{#1}}}
+\newcommand{\NormalTok}[1]{#1}
+\newcommand{\OperatorTok}[1]{\textcolor[rgb]{0.40,0.40,0.40}{#1}}
+\newcommand{\OtherTok}[1]{\textcolor[rgb]{0.00,0.44,0.13}{#1}}
+\newcommand{\PreprocessorTok}[1]{\textcolor[rgb]{0.74,0.48,0.00}{#1}}
+\newcommand{\RegionMarkerTok}[1]{#1}
+\newcommand{\SpecialCharTok}[1]{\textcolor[rgb]{0.25,0.44,0.63}{#1}}
+\newcommand{\SpecialStringTok}[1]{\textcolor[rgb]{0.73,0.40,0.53}{#1}}
+\newcommand{\StringTok}[1]{\textcolor[rgb]{0.25,0.44,0.63}{#1}}
+\newcommand{\VariableTok}[1]{\textcolor[rgb]{0.10,0.09,0.49}{#1}}
+\newcommand{\VerbatimStringTok}[1]{\textcolor[rgb]{0.25,0.44,0.63}{#1}}
+\newcommand{\WarningTok}[1]{\textcolor[rgb]{0.38,0.63,0.69}{\textbf{\textit{#1}}}}
+\setlength{\emergencystretch}{3em} % prevent overfull lines
+\providecommand{\tightlist}{%
+  \setlength{\itemsep}{0pt}\setlength{\parskip}{0pt}}
+\setcounter{secnumdepth}{-\maxdimen} % remove section numbering
+\ifLuaTeX
+  \usepackage{selnolig}  % disable illegal ligatures
+\fi
+\usepackage{bookmark}
+\IfFileExists{xurl.sty}{\usepackage{xurl}}{} % add URL line breaks if available
+\urlstyle{same}
+\hypersetup{
+  hidelinks,
+  pdfcreator={LaTeX via pandoc}}
+
+\author{}
+\date{}
+
+\begin{document}
+
+\section{ClientOpsCRM 2.0.0 Operator
+Guide}\label{clientopscrm-200-operator-guide}
+
+\subsection{Purpose}\label{purpose}
+
+ClientOpsCRM turns the accepted/qualified work entering ClientOps Relay
+into durable customer and sales records. Relay remains the
+intake/routing engine. The CRM is the system an operator uses to retain
+accounts, people, leads, opportunities, follow-up work, notes, and
+evidence of mutations.
+
+\subsection{Build}\label{build}
+
+From the release root:
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\FunctionTok{make} \AttributeTok{{-}C}\NormalTok{ crm release}
+\end{Highlighting}
+\end{Shaded}
+
+Or use the integrated launcher:
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\ExtensionTok{./clientops}\NormalTok{ crm{-}build}
+\end{Highlighting}
+\end{Shaded}
+
+The resulting optimized binary is \texttt{crm/build/clientops-crm}. The
+release package also includes a prebuilt Linux x86-64 binary under
+\texttt{crm/bin/linux-x86\_64/}.
+
+\subsection{Database selection}\label{database-selection}
+
+The integrated launcher defaults to \texttt{runtime/clientops-crm.db},
+creates the runtime directory with mode 0700, initializes the database
+on first use under a restrictive umask, and sets the database file to
+mode 0600.
+
+For an explicit database:
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\ExtensionTok{crm/build/clientops{-}crm} \AttributeTok{{-}{-}db}\NormalTok{ /path/clientops.db init}
+\end{Highlighting}
+\end{Shaded}
+
+Every modifying command accepts the global \texttt{-\/-actor\ NAME}
+option. Use a stable operator or automation identity so audit provenance
+is meaningful.
+
+\subsection{Daily workflow}\label{daily-workflow}
+
+\subsubsection{1. Capture or import a
+lead}\label{1-capture-or-import-a-lead}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\ExtensionTok{./clientops}\NormalTok{ crm lead add }\AttributeTok{{-}{-}name} \StringTok{"Jane Doe"} \AttributeTok{{-}{-}email}\NormalTok{ jane@example.org }\AttributeTok{{-}{-}company} \StringTok{"Example"} \AttributeTok{{-}{-}source}\NormalTok{ referral }\AttributeTok{{-}{-}score}\NormalTok{ 75 }\AttributeTok{{-}{-}priority}\NormalTok{ medium }\AttributeTok{{-}{-}owner}\NormalTok{ sam}
+\end{Highlighting}
+\end{Shaded}
+
+A lead may carry a Relay UUID with \texttt{-\/-relay-ticket} and
+arbitrary valid JSON with \texttt{-\/-metadata-json}. Email and phone
+are normalized for matching while the entered display form is retained.
+
+\subsubsection{2. Qualify or disqualify}\label{2-qualify-or-disqualify}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\ExtensionTok{./clientops}\NormalTok{ crm lead qualify 1}
+\ExtensionTok{./clientops}\NormalTok{ crm lead disqualify 2 }\AttributeTok{{-}{-}reason} \StringTok{"Outside service scope"}
+\end{Highlighting}
+\end{Shaded}
+
+A disqualification requires a reason. Only qualified leads are
+convertible.
+
+\subsubsection{3. Convert atomically}\label{3-convert-atomically}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\ExtensionTok{./clientops}\NormalTok{ crm lead convert 1 }\AttributeTok{{-}{-}amount}\NormalTok{ 12345.67 }\AttributeTok{{-}{-}currency}\NormalTok{ EUR }\AttributeTok{{-}{-}close}\NormalTok{ 2026{-}12{-}31 }\AttributeTok{{-}{-}owner}\NormalTok{ sam}
+\end{Highlighting}
+\end{Shaded}
+
+Conversion either commits the coherent result or leaves no partial
+account/contact/deal side effect. If a matching normalized account
+domain/contact email already exists, the operator can reference the
+known account explicitly; otherwise the converter can construct the
+needed records from the qualified lead.
+
+\subsubsection{4. Move the opportunity}\label{4-move-the-opportunity}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\ExtensionTok{./clientops}\NormalTok{ crm pipeline list}
+\ExtensionTok{./clientops}\NormalTok{ crm deal move 1 Discovery}
+\ExtensionTok{./clientops}\NormalTok{ crm deal move 1 Proposal}
+\ExtensionTok{./clientops}\NormalTok{ crm deal win 1}
+\end{Highlighting}
+\end{Shaded}
+
+A closed deal cannot be moved back to an open stage by the normal
+command surface. Lost deals require a reason:
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\ExtensionTok{./clientops}\NormalTok{ crm deal lost 2 }\AttributeTok{{-}{-}reason} \StringTok{"Budget cancelled"}
+\end{Highlighting}
+\end{Shaded}
+
+\subsubsection{5. Track follow-up work}\label{5-track-follow-up-work}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\ExtensionTok{./clientops}\NormalTok{ crm task add }\AttributeTok{{-}{-}entity}\NormalTok{ deal }\AttributeTok{{-}{-}id}\NormalTok{ 1 }\AttributeTok{{-}{-}subject} \StringTok{"Send revised proposal"} \AttributeTok{{-}{-}due}\NormalTok{ 2026{-}09{-}14 }\AttributeTok{{-}{-}priority}\NormalTok{ high }\AttributeTok{{-}{-}owner}\NormalTok{ sam}
+\ExtensionTok{./clientops}\NormalTok{ crm task list }\AttributeTok{{-}{-}status}\NormalTok{ open }\AttributeTok{{-}{-}owner}\NormalTok{ sam}
+\ExtensionTok{./clientops}\NormalTok{ crm task done 1}
+\end{Highlighting}
+\end{Shaded}
+
+Tasks can attach to an account, contact, lead, or deal.
+
+\subsubsection{6. Record durable
+context}\label{6-record-durable-context}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\ExtensionTok{./clientops}\NormalTok{ crm note add }\AttributeTok{{-}{-}entity}\NormalTok{ account }\AttributeTok{{-}{-}id}\NormalTok{ 1 }\AttributeTok{{-}{-}body} \StringTok{"Procurement requires a written security appendix"} \AttributeTok{{-}{-}author}\NormalTok{ sam}
+\ExtensionTok{./clientops}\NormalTok{ crm field set }\AttributeTok{{-}{-}entity}\NormalTok{ account }\AttributeTok{{-}{-}id}\NormalTok{ 1 }\AttributeTok{{-}{-}key}\NormalTok{ risk\_band }\AttributeTok{{-}{-}value}\NormalTok{ low}
+\end{Highlighting}
+\end{Shaded}
+
+Custom field keys are restricted to deterministic identifier syntax and
+are unique per entity/key.
+
+\subsubsection{7. Find and inspect}\label{7-find-and-inspect}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\ExtensionTok{./clientops}\NormalTok{ crm search procurement}
+\ExtensionTok{./clientops}\NormalTok{ crm timeline }\AttributeTok{{-}{-}entity}\NormalTok{ account }\AttributeTok{{-}{-}id}\NormalTok{ 1}
+\ExtensionTok{./clientops}\NormalTok{ crm audit }\AttributeTok{{-}{-}entity}\NormalTok{ deal }\AttributeTok{{-}{-}id}\NormalTok{ 1}
+\end{Highlighting}
+\end{Shaded}
+
+Search spans the core textual business records and notes. Timeline is
+the human-oriented business history; audit is the mutation record.
+
+\subsubsection{8. Forecast and health}\label{8-forecast-and-health}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\ExtensionTok{./clientops}\NormalTok{ crm dashboard}
+\ExtensionTok{./clientops}\NormalTok{ crm forecast}
+\ExtensionTok{./clientops}\NormalTok{ crm doctor}
+\end{Highlighting}
+\end{Shaded}
+
+Forecasting is deterministic weighted pipeline arithmetic using integer
+minor units and the stage probability already stored on each open deal.
+It is not presented as a predictive model. \texttt{doctor} is the
+integrity gate and should be run after imports, before backup, and after
+restoring a database.
+
+\subsection{Relay synchronization}\label{relay-synchronization}
+
+With the Relay deployment running:
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\ExtensionTok{./clientops}\NormalTok{ crm{-}import{-}relay}
+\end{Highlighting}
+\end{Shaded}
+
+The bridge exports the canonical Relay lead rows from PostgreSQL with
+\texttt{COPY\ ...\ CSV\ HEADER}, streams them into
+\texttt{lead\ import-csv\ -\/-in\ -\ -\/-skip-existing}, and stores
+routing/policy fields in \texttt{metadata\_json}. Because
+\texttt{relay\_ticket\_id} is unique and replay is skipped, the bridge
+is safe to invoke repeatedly for already-imported Relay leads.
+
+\subsection{Backup and migration}\label{backup-and-migration}
+
+The CRM database is a single SQLite application file. Quiesce writers or
+use SQLite\textquotesingle s backup mechanisms before copying a live
+database. Preserve the entire database file, not selected tables. After
+restore, run \texttt{doctor}. The application refuses to initialize a
+database whose \texttt{crm\_meta.schema\_version} is not exactly the
+version it understands, preventing silent downgrade/overwrite.
+
+\subsection{Machine-readable
+operation}\label{machine-readable-operation}
+
+Add \texttt{-\/-json} globally for commands that return structured data:
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\ExtensionTok{./clientops}\NormalTok{ crm }\AttributeTok{{-}{-}json}\NormalTok{ deal list }\AttributeTok{{-}{-}status}\NormalTok{ open}
+\end{Highlighting}
+\end{Shaded}
+
+This is intended for scripts and future integrations without parsing
+decorative terminal output.
+
+\end{document}

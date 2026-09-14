@@ -1,0 +1,35 @@
+{
+  "name": "clientops-relay",
+  "version": "1.2.1",
+  "private": true,
+  "description": "Deterministic, self-hosted request intake and follow-up automation for n8n.",
+  "type": "module",
+  "engines": {
+    "node": ">=22.22"
+  },
+  "scripts": {
+    "build:workflows": "node scripts/build-workflows.mjs",
+    "build:deployments": "node scripts/render-deployments.mjs",
+    "build:release": "node scripts/build-release-manifest.mjs",
+    "test:policy": "make -C policy-engine test",
+    "test:native-builds": "make -C policy-engine parity",
+    "test:companion": "node tests/companion.mjs",
+    "test:database": "node tests/database.mjs",
+    "test:upgrade": "node tests/upgrade.mjs",
+    "test:backup-integrity": "node tests/backup-integrity.mjs",
+    "test:workflows": "node tests/workflows.mjs",
+    "test:deployment": "node tests/deployment.mjs",
+    "test:deploy-renderers": "node tests/deploy-renderers.mjs",
+    "test:installer": "sh tests/installer.sh",
+    "test:docs": "node tests/docs.mjs",
+    "test:domain-neutrality": "node tests/domain-neutrality.mjs",
+    "test:exact-n8n": "sh tests/exact-n8n.sh",
+    "test": "npm run test:policy && npm run test:native-builds && npm run test:companion && npm run test:database && npm run test:upgrade && npm run test:backup-integrity && npm run test:workflows && npm run test:deployment && npm run test:edge-security && npm run test:deploy-renderers && npm run test:installer && npm run test:docs && npm run test:domain-neutrality && npm run test:release-audit",
+    "test:edge-security": "node tests/edge-security.mjs",
+    "test:release-audit": "node tests/release-audit.mjs"
+  },
+  "devDependencies": {
+    "@electric-sql/pglite": "0.3.14"
+  },
+  "license": "Apache-2.0"
+}

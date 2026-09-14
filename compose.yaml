@@ -1,0 +1,314 @@
+name: clientops-relay
+
+x-n8n-environment: &n8n-environment
+  DB_TYPE: postgresdb
+  DB_POSTGRESDB_HOST: postgres
+  DB_POSTGRESDB_PORT: 5432
+  DB_POSTGRESDB_DATABASE: n8n
+  DB_POSTGRESDB_USER: n8n
+  DB_POSTGRESDB_PASSWORD: ${N8N_DB_PASSWORD}
+  DB_POSTGRESDB_SCHEMA: public
+  DB_POSTGRESDB_POOL_SIZE: 5
+  DB_POSTGRESDB_CONNECTION_TIMEOUT: 20000
+  DB_POSTGRESDB_IDLE_CONNECTION_TIMEOUT: 30000
+  DB_POSTGRESDB_MAX_CONNECTION_LIFETIME_MS: 3600000
+  DB_POSTGRESDB_KEEP_ALIVE: "true"
+  N8N_ENCRYPTION_KEY: ${N8N_ENCRYPTION_KEY}
+  N8N_ENFORCE_SETTINGS_FILE_PERMISSIONS: "true"
+  N8N_DIAGNOSTICS_ENABLED: "false"
+  N8N_VERSION_NOTIFICATIONS_ENABLED: "false"
+  N8N_TEMPLATES_ENABLED: "false"
+  N8N_PERSONALIZATION_ENABLED: "false"
+  N8N_HIRING_BANNER_ENABLED: "false"
+  N8N_METRICS: "false"
+  N8N_UNVERIFIED_PACKAGES_ENABLED: "false"
+  N8N_BLOCK_ENV_ACCESS_IN_NODE: "true"
+  N8N_PAYLOAD_SIZE_MAX: 1
+  N8N_FORMDATA_FILE_SIZE_MAX: 1
+  N8N_DEFAULT_BINARY_DATA_MODE: filesystem
+  N8N_RUNNERS_MODE: external
+  N8N_RUNNERS_AUTH_TOKEN: ${N8N_RUNNERS_AUTH_TOKEN}
+  N8N_RUNNERS_BROKER_LISTEN_ADDRESS: 0.0.0.0
+  N8N_RUNNERS_TASK_TIMEOUT: 60
+  N8N_COMPRESSION_NODE_MAX_DECOMPRESSED_SIZE_BYTES: 268435456
+  N8N_COMPRESSION_NODE_MAX_ZIP_ENTRIES: 1000
+  N8N_SSRF_PROTECTION_ENABLED: "true"
+  N8N_SSRF_ALLOWED_HOSTNAMES: policy,ntfy
+  NODES_EXCLUDE: '["n8n-nodes-base.executeCommand","n8n-nodes-base.readWriteFile"]'
+  EXECUTIONS_DATA_PRUNE: "true"
+  EXECUTIONS_DATA_SAVE_ON_ERROR: none
+  EXECUTIONS_DATA_SAVE_ON_SUCCESS: none
+  EXECUTIONS_DATA_SAVE_ON_PROGRESS: "false"
+  EXECUTIONS_DATA_SAVE_MANUAL_EXECUTIONS: "false"
+  EXECUTIONS_DATA_MAX_AGE: 168
+  EXECUTIONS_DATA_PRUNE_MAX_COUNT: 10000
+  EXECUTIONS_TIMEOUT: 300
+  N8N_HOST: ${CLIENTOPS_PUBLIC_HOST:?CLIENTOPS_PUBLIC_HOST is required; run ./clientops setup}
+  N8N_PORT: 5678
+  N8N_PROTOCOL: https
+  N8N_EDITOR_BASE_URL: ${CLIENTOPS_PUBLIC_ORIGIN:?CLIENTOPS_PUBLIC_ORIGIN is required; run ./clientops setup}
+  N8N_WEBHOOK_URL: ${CLIENTOPS_PUBLIC_ORIGIN:?CLIENTOPS_PUBLIC_ORIGIN is required; run ./clientops setup}/
+  N8N_SECURE_COOKIE: "true"
+  N8N_PROXY_HOPS: "1"
+  GENERIC_TIMEZONE: ${CLIENTOPS_TIMEZONE:?CLIENTOPS_TIMEZONE is required; add it to .env before upgrading}
+  TZ: ${CLIENTOPS_TIMEZONE:?CLIENTOPS_TIMEZONE is required; add it to .env before upgrading}
+  CLIENTOPS_INTAKE_API_KEY: ${CLIENTOPS_INTAKE_API_KEY}
+  CLIENTOPS_ADMIN_API_KEY: ${CLIENTOPS_ADMIN_API_KEY}
+  CLIENTOPS_DB_PASSWORD: ${CLIENTOPS_DB_PASSWORD}
+  CLIENTOPS_DB_HOST: postgres
+  CLIENTOPS_DB_NAME: clientops
+  CLIENTOPS_DB_USER: clientops_app
+  CLIENTOPS_DB_PORT: 5432
+  CLIENTOPS_SMTP_HOST: mailpit
+  CLIENTOPS_SMTP_PORT: 1025
+
+services:
+  edge:
+    image: traefik:3.7.13@sha256:f86a2cab1b5c649070c49f883c743dd32d8485a56e3368c5f93b9e91f1e91259
+    restart: unless-stopped
+    read_only: true
+    tmpfs:
+      - /tmp:size=16m,mode=1777
+    ports:
+      - "${CLIENTOPS_EDGE_BIND_HTTP:?CLIENTOPS_EDGE_BIND_HTTP is required}:80"
+      - "${CLIENTOPS_EDGE_BIND_HTTPS:?CLIENTOPS_EDGE_BIND_HTTPS is required}:443"
+    volumes:
+      - ./runtime/traefik.yml:/etc/traefik/traefik.yml:ro
+      - ./runtime/edge-dynamic.yml:/etc/traefik/dynamic.yml:ro
+      - ./runtime/edge-users:/run/secrets/clientops-edge-users:ro
+      - traefik_data:/var/lib/traefik
+    depends_on:
+      n8n:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD", "traefik", "healthcheck", "--ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+      start_period: 10s
+    cap_drop:
+      - ALL
+    cap_add:
+      - NET_BIND_SERVICE
+    security_opt:
+      - no-new-privileges:true
+    networks:
+      - edge
+
+  postgres:
+    image: postgres:16.14-alpine
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: ${POSTGRES_ADMIN_PASSWORD}
+      POSTGRES_DB: postgres
+      N8N_DB_PASSWORD: ${N8N_DB_PASSWORD}
+      CLIENTOPS_DB_PASSWORD: ${CLIENTOPS_DB_PASSWORD}
+      CLIENTOPS_OWNER_EMAIL: ${CLIENTOPS_OWNER_EMAIL}
+      CLIENTOPS_NTFY_TOPIC: ${CLIENTOPS_NTFY_TOPIC}
+      CLIENTOPS_TIMEZONE: ${CLIENTOPS_TIMEZONE:?CLIENTOPS_TIMEZONE is required; add it to .env before upgrading}
+      TZ: ${CLIENTOPS_TIMEZONE}
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+      - ./database/001-bootstrap.sh:/docker-entrypoint-initdb.d/001-bootstrap.sh:ro
+      - ./database/schema.sql:/opt/clientops/schema.sql:ro
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres -d postgres"]
+      interval: 5s
+      timeout: 5s
+      retries: 20
+      start_period: 10s
+    security_opt:
+      - no-new-privileges:true
+    networks:
+      - data
+
+  database-migrate:
+    image: postgres:16.14-alpine
+    restart: "no"
+    environment:
+      PGPASSWORD: ${POSTGRES_ADMIN_PASSWORD}
+      CLIENTOPS_TIMEZONE: ${CLIENTOPS_TIMEZONE:?CLIENTOPS_TIMEZONE is required; add it to .env before upgrading}
+    entrypoint:
+      - /bin/sh
+      - /opt/clientops/database/migrate.sh
+    volumes:
+      - ./database:/opt/clientops/database:ro
+    depends_on:
+      postgres:
+        condition: service_healthy
+      n8n-upgrade-preflight:
+        condition: service_completed_successfully
+    security_opt:
+      - no-new-privileges:true
+    networks:
+      - data
+
+  policy:
+    build:
+      context: ./policy-engine
+      dockerfile: Dockerfile
+    restart: unless-stopped
+    read_only: true
+    tmpfs:
+      - /tmp:size=16m,mode=1777
+    security_opt:
+      - no-new-privileges:true
+    networks:
+      - automation
+
+  mailpit:
+    image: axllent/mailpit:v1.30.6
+    restart: unless-stopped
+    environment:
+      MP_DATABASE: /data/mailpit.db
+      MP_MAX_MESSAGES: 500
+      MP_MAX_AGE: 90d
+      MP_SMTP_BIND_ADDR: 0.0.0.0:1025
+      MP_UI_BIND_ADDR: 0.0.0.0:8025
+      TZ: ${CLIENTOPS_TIMEZONE}
+    volumes:
+      - mailpit_data:/data
+    ports:
+      - 127.0.0.1:8025:8025
+    healthcheck:
+      test: ["CMD", "/mailpit", "readyz"]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+      start_period: 10s
+    security_opt:
+      - no-new-privileges:true
+    networks:
+      - automation
+
+  ntfy:
+    image: binwiederhier/ntfy:v2.27.0
+    command:
+      - serve
+    restart: unless-stopped
+    init: true
+    environment:
+      NTFY_BASE_URL: http://localhost:8081
+      NTFY_CACHE_FILE: /var/cache/ntfy/cache.db
+      NTFY_AUTH_DEFAULT_ACCESS: read-write
+      TZ: ${CLIENTOPS_TIMEZONE}
+    volumes:
+      - ntfy_cache:/var/cache/ntfy
+    ports:
+      - 127.0.0.1:8081:80
+    healthcheck:
+      test: ["CMD-SHELL", "wget -q --tries=1 http://localhost:80/v1/health -O - | grep -Eo '\"healthy\"[[:space:]]*:[[:space:]]*true' >/dev/null || exit 1"]
+      interval: 15s
+      timeout: 5s
+      retries: 10
+      start_period: 15s
+    security_opt:
+      - no-new-privileges:true
+    networks:
+      - automation
+
+  n8n-upgrade-preflight:
+    image: n8nio/n8n:2.37.10
+    restart: "no"
+    entrypoint:
+      - /bin/sh
+      - /opt/clientops/scripts/bootstrap-n8n.sh
+    environment:
+      <<: *n8n-environment
+      CLIENTOPS_BOOTSTRAP_MODE: preflight
+    volumes:
+      - n8n_data:/home/node/.n8n
+      - ./:/opt/clientops:ro
+    depends_on:
+      postgres:
+        condition: service_healthy
+    security_opt:
+      - no-new-privileges:true
+    networks:
+      - data
+
+  n8n-init:
+    image: n8nio/n8n:2.37.10
+    restart: "no"
+    entrypoint:
+      - /bin/sh
+      - /opt/clientops/scripts/bootstrap-n8n.sh
+    environment: *n8n-environment
+    volumes:
+      - n8n_data:/home/node/.n8n
+      - ./:/opt/clientops:ro
+    depends_on:
+      database-migrate:
+        condition: service_completed_successfully
+    security_opt:
+      - no-new-privileges:true
+    networks:
+      - data
+
+  n8n:
+    image: n8nio/n8n:2.37.10
+    restart: unless-stopped
+    environment: *n8n-environment
+    volumes:
+      - n8n_data:/home/node/.n8n
+    depends_on:
+      postgres:
+        condition: service_healthy
+      policy:
+        condition: service_healthy
+      mailpit:
+        condition: service_healthy
+      ntfy:
+        condition: service_healthy
+      n8n-init:
+        condition: service_completed_successfully
+    healthcheck:
+      test: ["CMD-SHELL", "wget -q --spider http://127.0.0.1:5678/healthz/readiness || exit 1"]
+      interval: 10s
+      timeout: 5s
+      retries: 20
+      start_period: 20s
+    security_opt:
+      - no-new-privileges:true
+    networks:
+      - data
+      - automation
+      - edge
+
+  task-runner:
+    image: n8nio/runners:2.37.10
+    restart: unless-stopped
+    environment:
+      N8N_RUNNERS_AUTH_TOKEN: ${N8N_RUNNERS_AUTH_TOKEN}
+      N8N_RUNNERS_TASK_BROKER_URI: http://n8n:5679
+      N8N_RUNNERS_MAX_CONCURRENCY: 5
+      N8N_RUNNERS_HEALTH_CHECK_SERVER_ENABLED: "true"
+      N8N_RUNNERS_HEALTH_CHECK_SERVER_HOST: 0.0.0.0
+    depends_on:
+      n8n:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD", "node", "-e", "fetch('http://127.0.0.1:5680').then(r=>{if(!r.ok)process.exit(1)}).catch(()=>process.exit(1))"]
+      interval: 5s
+      timeout: 3s
+      retries: 20
+      start_period: 10s
+    security_opt:
+      - no-new-privileges:true
+    networks:
+      - automation
+
+volumes:
+  postgres_data:
+  n8n_data:
+  mailpit_data:
+  ntfy_cache:
+  traefik_data:
+
+networks:
+  data:
+    internal: true
+  automation:
+    internal: true
+  edge:
